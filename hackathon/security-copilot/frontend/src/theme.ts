@@ -123,6 +123,89 @@ const theme = createTheme({
       defaultProps: {
         variant: 'outlined',
       },
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'var(--color-bg-paper)',
+            '& fieldset': {
+              borderColor: 'var(--color-border)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'var(--color-primary-light)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'var(--color-primary)',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: 'var(--color-text-secondary)',
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: 'var(--color-primary)',
+          },
+          '& .MuiFormHelperText-root': {
+            color: 'var(--color-text-secondary)',
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          color: 'var(--color-text-primary)',
+          backgroundColor: 'var(--color-bg-paper)',
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--color-border)',
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--color-primary-light)',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--color-primary)',
+          },
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: 'var(--color-bg-paper)',
+          backgroundImage: 'none',
+          border: '1px solid var(--color-border)',
+          boxShadow: '0 8px 24px var(--color-shadow)',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          color: 'var(--color-text-primary)',
+          borderBottom: '1px solid var(--color-divider)',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          color: 'var(--color-text-primary)',
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          borderTop: '1px solid var(--color-divider)',
+          padding: '16px 24px',
+        },
+      },
+    },
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        },
+      },
     },
     MuiPaper: {
       styleOverrides: {

@@ -18,7 +18,9 @@ from app.schemas.article import (
     VerificationResultResponse,
 )
 from app.schemas.approval import ApprovalResponse
+from app.schemas.comparison import SourceCompareResponse
 from app.schemas.content import GeneratedContentResponse
+from app.services.source_comparison import SourceComparisonService
 from app.services.verification import VerificationService
 
 logger = logging.getLogger(__name__)
@@ -134,6 +136,33 @@ def get_article(
         ]
 
     return detail
+
+
+@router.get("/{article_id}/compare-sources", response_model=SourceCompareResponse)
+def compare_article_sources(
+    article_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> SourceCompareResponse:
+    """Fetch related coverage from CrowdStrike, SentinelOne, and Microsoft security blogs."""
+    repo = ArticleRepository(db)
+    article = repo.get(article_id)
+    if article is None:
+        raise NotFoundException(detail=f"Article {article_id} not found")
+
+    if current_user.role == "viewer" and article.status not in {"approved", "published"}:
+        raise NotFoundException(detail=f"Article {article_id} not found")
+
+    service = SourceComparisonService(db)
+    try:
+        result = service.compare_article(article_id)
+    except ValueError as exc:
+        raise NotFoundException(detail=str(exc))
+    except Exception as exc:
+        logger.error("Source comparison failed for article %s: %s", article_id, exc)
+        raise BadRequestException(detail=f"Source comparison failed: {exc}")
+
+    return SourceCompareResponse.model_validate(result)
 
 
 @router.post("/{article_id}/verify", response_model=VerificationResultResponse)

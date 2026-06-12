@@ -23,6 +23,8 @@ import HistoryIcon from '@mui/icons-material/History';
 import SecurityIcon from '@mui/icons-material/Security';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import RadarIcon from '@mui/icons-material/Radar';
+import HubIcon from '@mui/icons-material/Hub';
+import ContactsIcon from '@mui/icons-material/Contacts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
@@ -50,6 +52,18 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Content Management',
     path: '/content',
     icon: <ArticleIcon />,
+    roles: ['analyst', 'admin'],
+  },
+  {
+    label: 'Publishing Channels',
+    path: '/publishing-channels',
+    icon: <HubIcon />,
+    roles: ['admin'],
+  },
+  {
+    label: 'Client Mails',
+    path: '/client-mails',
+    icon: <ContactsIcon />,
     roles: ['analyst', 'admin'],
   },
   { label: 'Sources', path: '/sources', icon: <SourceIcon />, roles: ['admin'] },
@@ -97,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <Toolbar sx={{ gap: 1, px: 2 }}>
         <SecurityIcon sx={{ color: 'primary.main', fontSize: 28 }} />
         <Typography variant="h6" fontWeight={700} noWrap sx={{ color: 'primary.main' }}>
-          SecCopilot
+          EchoSafe
         </Typography>
       </Toolbar>
       <Divider />

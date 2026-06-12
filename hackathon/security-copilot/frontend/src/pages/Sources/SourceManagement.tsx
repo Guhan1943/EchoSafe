@@ -245,7 +245,7 @@ const SourceManagement: React.FC = () => {
                     <TableRow key={i}>
                       {Array.from({ length: 7 }).map((_, j) => (
                         <TableCell key={j} sx={{ borderBottom: '1px solid rgba(0,120,215,0.1)' }}>
-                          <Skeleton sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                          <Skeleton />
                         </TableCell>
                       ))}
                     </TableRow>
@@ -338,7 +338,6 @@ const SourceManagement: React.FC = () => {
         onClose={() => { setAddOpen(false); setEditSource(null); }}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
         <DialogTitle sx={{ color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border-primary)' }}>
           {editSource ? 'Edit Source' : 'Add Source'}
@@ -363,7 +362,6 @@ const SourceManagement: React.FC = () => {
       <Dialog
         open={!!deleteSource}
         onClose={() => setDeleteSource(null)}
-        PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
         <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Delete Source</DialogTitle>
         <DialogContent>

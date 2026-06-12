@@ -18,6 +18,7 @@ export const contentApi = {
   listContent: async (params?: {
     skip?: number;
     limit?: number;
+    approved_only?: boolean;
   }): Promise<GeneratedContentListResponse> => {
     const response = await apiClient.get<GeneratedContentListResponse>('/content', {
       params,
@@ -54,9 +55,13 @@ export const contentApi = {
     return response.data as Blob;
   },
 
-  publishContent: async (contentId: number): Promise<PublishedContent> => {
+  publishContent: async (
+    contentId: number,
+    data?: { recipients?: string[]; recipient_ids?: number[] }
+  ): Promise<PublishedContent> => {
     const response = await apiClient.post<PublishedContent>(
-      `/publishing/${contentId}/publish`
+      `/publishing/${contentId}/publish`,
+      data ?? {}
     );
     return response.data;
   },

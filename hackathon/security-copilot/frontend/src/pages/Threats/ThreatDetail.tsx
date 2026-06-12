@@ -35,7 +35,7 @@ const ThreatDetail: React.FC = () => {
   if (error) return <Box sx={{ p: 3 }}><Alert severity="error">Failed to load threat details.</Alert></Box>;
   if (isLoading) return (
     <Box sx={{ p: 3 }}>
-      {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} height={60} sx={{ bgcolor: 'rgba(255,255,255,0.08)', mb: 1 }} />)}
+      {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} height={60} sx={{ mb: 1 }} />)}
     </Box>
   );
   if (!threat) return null;

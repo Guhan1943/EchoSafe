@@ -12,6 +12,7 @@ from app.models.user import User
 from app.repositories.approval import ApprovalRepository
 from app.repositories.article import ArticleRepository
 from app.schemas.approval import ApprovalCreate, ApprovalListResponse, ApprovalResponse
+from app.services.content_approval import sync_content_approval_for_article
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,10 @@ def _create_approval_record(
     if article is not None:
         article.status = action  # action matches the status value
         db.add(article)
+        if action == "approved":
+            sync_content_approval_for_article(db, article_id, True)
+        elif action == "rejected":
+            sync_content_approval_for_article(db, article_id, False)
 
     db.flush()
 

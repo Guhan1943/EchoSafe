@@ -1,16 +1,16 @@
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_active_user, require_analyst
 from app.core.exceptions import BadRequestException, NotFoundException
 from app.database import get_db
-from app.models.audit import AuditLog
 from app.models.user import User
 from app.repositories.content import ContentRepository
 from app.schemas.content import PublishedContentListResponse, PublishedContentResponse
+from app.schemas.publish import PublishRequest
 from app.services.publishing import PublishingService
 
 logger = logging.getLogger(__name__)
@@ -21,20 +21,27 @@ router = APIRouter()
 @router.post("/{content_id}/publish", response_model=PublishedContentResponse, status_code=201)
 def publish_content(
     content_id: int,
-    request: Request,
+    body: PublishRequest = PublishRequest(),
     db: Session = Depends(get_db),
     analyst: User = Depends(require_analyst),
 ) -> PublishedContentResponse:
-    """Publish generated content (analyst/admin only)."""
-    # Verify content exists first
+    """Publish generated content to its mapped channel (analyst/admin only)."""
     content_repo = ContentRepository(db)
     content = content_repo.get(content_id)
     if content is None:
         raise NotFoundException(detail=f"GeneratedContent {content_id} not found")
 
+    recipients = [str(r) for r in body.recipients]
+    recipient_ids = body.recipient_ids or None
+
     service = PublishingService(db)
     try:
-        published = service.publish(content_id, analyst.id)
+        published = service.publish(
+            content_id,
+            analyst.id,
+            recipients=recipients or None,
+            recipient_ids=recipient_ids,
+        )
     except ValueError as exc:
         error_msg = str(exc)
         if "not found" in error_msg.lower():

@@ -76,10 +76,7 @@ const Login: React.FC = () => {
               <ShieldIcon sx={{ fontSize: 40, color: 'var(--color-primary-contrast)' }} />
             </Box>
             <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>
-              Security Intelligence
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 400, color: 'var(--color-primary)' }}>
-              Copilot
+              EchoSafe
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mt: 1 }}>
               <SecurityIcon sx={{ fontSize: 14, color: 'var(--color-primary)' }} />

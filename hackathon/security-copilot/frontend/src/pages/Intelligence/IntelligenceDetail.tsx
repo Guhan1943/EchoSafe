@@ -21,16 +21,20 @@ import {
   TextField,
   LinearProgress,
   Link,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
   ExpandMore as ExpandIcon,
-  Verified as VerifiedIcon,
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
   AutoAwesome as GenerateIcon,
   OpenInNew as OpenIcon,
+  CompareArrows as CompareIcon,
+  InfoOutlined as InfoIcon,
 } from '@mui/icons-material';
+import { chartTooltipStyle } from '../../styles/formStyles';
 import {
   BarChart,
   Bar,
@@ -47,7 +51,10 @@ import { approvalsApi } from '../../api/approvals';
 import { contentApi } from '../../api/content';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
+import GeneratedContentPreview from '../../components/Content/GeneratedContentPreview';
+import ScoringSystemInfoDialog from '../../components/Intelligence/ScoringSystemInfoDialog';
 import { ArticleStatus } from '../../types/article';
+import type { VendorCompareSource } from '../../types/comparison';
 
 const severityColor: Record<string, string> = {
   critical: '#d32f2f',
@@ -86,6 +93,8 @@ const IntelligenceDetail: React.FC = () => {
   const queryClient = useQueryClient();
   const [tabValue, setTabValue] = useState(0);
   const [approvalNotes, setApprovalNotes] = useState('');
+  const [showCompare, setShowCompare] = useState(false);
+  const [showScoringInfo, setShowScoringInfo] = useState(false);
 
   const articleId = parseInt(id ?? '0', 10);
 
@@ -93,15 +102,6 @@ const IntelligenceDetail: React.FC = () => {
     queryKey: ['article', articleId],
     queryFn: () => articlesApi.getArticle(articleId),
     enabled: !!articleId,
-  });
-
-  const verifyMutation = useMutation({
-    mutationFn: () => articlesApi.verifyArticle(articleId),
-    onSuccess: () => {
-      showSuccess('Article verified successfully');
-      queryClient.invalidateQueries({ queryKey: ['article', articleId] });
-    },
-    onError: () => showError('Verification failed'),
   });
 
   const approveMutation = useMutation({
@@ -134,6 +134,19 @@ const IntelligenceDetail: React.FC = () => {
     onError: () => showError('Content generation failed'),
   });
 
+  const compareQuery = useQuery({
+    queryKey: ['compare-sources', articleId],
+    queryFn: () => articlesApi.compareSources(articleId),
+    enabled: showCompare && !!articleId,
+  });
+
+  const handleCompare = () => {
+    setShowCompare(true);
+    if (compareQuery.data) {
+      compareQuery.refetch();
+    }
+  };
+
   const canActOnArticle = user?.role === 'admin' || user?.role === 'analyst';
 
   if (isLoading) {
@@ -158,17 +171,105 @@ const IntelligenceDetail: React.FC = () => {
     ? Object.entries(vr.trust_score_breakdown).map(([name, value]) => ({ name, value }))
     : [];
 
+  const renderCompareCard = (source: VendorCompareSource) => (
+    <Card
+      key={source.source_id}
+      sx={{
+        height: '100%',
+        background: 'var(--color-card-bg)',
+        border: '1px solid var(--color-border-primary)',
+        borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+          <Typography variant="subtitle1" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
+            {source.name}
+          </Typography>
+          <Chip label="✓" size="small" color="success" sx={{ height: 20, minWidth: 28 }} />
+        </Box>
+        <Typography variant="caption" sx={{ color: 'var(--color-primary)', display: 'block', mb: 0.5 }}>
+          {source.site}
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', fontWeight: 600, mb: 0.5 }}>
+          {source.tagline}
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', display: 'block', mb: 2, lineHeight: 1.5 }}>
+          {source.description}
+        </Typography>
+
+        {source.related ? (
+          <Box sx={{ mt: 'auto' }}>
+            <Chip
+              label={source.related.is_topical_match ? 'Related coverage' : 'Latest from vendor'}
+              size="small"
+              color={source.related.is_topical_match ? 'primary' : 'default'}
+              sx={{ mb: 1 }}
+            />
+            <Link
+              href={source.related.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+                fontSize: 14,
+                display: 'block',
+                mb: 1,
+                textDecoration: 'none',
+                '&:hover': { color: 'var(--color-primary)' },
+              }}
+            >
+              {source.related.title}
+            </Link>
+            <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', lineHeight: 1.6, mb: 1 }}>
+              {source.related.summary || 'No summary available.'}
+            </Typography>
+            {source.related.matched_terms.length > 0 && (
+              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                {source.related.matched_terms.slice(0, 6).map((term) => (
+                  <Chip key={term} label={term} size="small" variant="outlined" sx={{ fontSize: 10, height: 22 }} />
+                ))}
+              </Box>
+            )}
+          </Box>
+        ) : (
+          <Alert severity="info" sx={{ mt: 'auto' }}>
+            No related posts found from this vendor feed.
+          </Alert>
+        )}
+      </CardContent>
+    </Card>
+  );
+
   return (
     <Box sx={{ p: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 3 }}>
-        <Button
-          startIcon={<BackIcon />}
-          onClick={() => navigate(-1)}
-          sx={{ color: 'var(--color-primary)', mb: 2 }}
-        >
-          Back
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
+          <Button
+            startIcon={<BackIcon />}
+            onClick={() => navigate(-1)}
+            sx={{ color: 'var(--color-primary)' }}
+          >
+            Back
+          </Button>
+          <Tooltip title="How scoring works">
+            <IconButton
+              onClick={() => setShowScoringInfo(true)}
+              size="small"
+              sx={{
+                color: 'var(--color-primary)',
+                border: '1px solid rgba(0,120,215,0.35)',
+                '&:hover': { bgcolor: 'rgba(0,120,215,0.08)' },
+              }}
+            >
+              <InfoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
         <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
@@ -212,17 +313,18 @@ const IntelligenceDetail: React.FC = () => {
                 </Box>
               </Box>
 
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Button
+                  variant="outlined"
+                  startIcon={compareQuery.isFetching ? <CircularProgress size={16} /> : <CompareIcon />}
+                  onClick={handleCompare}
+                  disabled={compareQuery.isFetching}
+                  sx={{ borderColor: '#0288d1', color: '#0288d1' }}
+                >
+                  Compare Sources
+                </Button>
               {canActOnArticle && (
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={verifyMutation.isPending ? <CircularProgress size={16} /> : <VerifiedIcon />}
-                    onClick={() => verifyMutation.mutate()}
-                    disabled={verifyMutation.isPending}
-                    sx={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
-                  >
-                    Verify
-                  </Button>
                   <Button
                     variant="outlined"
                     startIcon={<ApproveIcon />}
@@ -252,10 +354,41 @@ const IntelligenceDetail: React.FC = () => {
                   </Button>
                 </Box>
               )}
+              </Box>
             </Box>
           </CardContent>
         </Card>
       </Box>
+
+      {showCompare && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 1 }}>
+            Vendor Source Comparison
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 2 }}>
+            Related coverage from major security vendors — matched by topic, CVEs, and keywords (not the same news article).
+          </Typography>
+          {compareQuery.isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          )}
+          {compareQuery.isError && (
+            <Alert severity="error">Failed to load vendor comparison. Please try again.</Alert>
+          )}
+          {compareQuery.data && (
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+                gap: 2,
+              }}
+            >
+              {compareQuery.data.sources.map(renderCompareCard)}
+            </Box>
+          )}
+        </Box>
+      )}
 
       {/* Notes field */}
       {canActOnArticle && (
@@ -441,7 +574,7 @@ const IntelligenceDetail: React.FC = () => {
                 )}
               </Box>
             ) : (
-              <Alert severity="info">No AI analysis available. Click "Verify" to run AI analysis.</Alert>
+              <Alert severity="info">No AI analysis available yet. Analysis runs automatically during collection.</Alert>
             )}
           </TabPanel>
 
@@ -454,6 +587,20 @@ const IntelligenceDetail: React.FC = () => {
                     {article.trust_score}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>Overall Trust Score / 100</Typography>
+                  {vr.trust_level && (
+                    <Chip
+                      label={vr.trust_level.replace(/_/g, ' ')}
+                      size="small"
+                      sx={{ mt: 1, textTransform: 'capitalize' }}
+                      color={
+                        vr.trust_level === 'high_confidence' || vr.trust_level === 'trusted'
+                          ? 'success'
+                          : vr.trust_level === 'pending_manual_review'
+                            ? 'warning'
+                            : 'error'
+                      }
+                    />
+                  )}
                   <LinearProgress
                     variant="determinate"
                     value={article.trust_score}
@@ -478,7 +625,7 @@ const IntelligenceDetail: React.FC = () => {
                         <XAxis dataKey="name" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} angle={-30} textAnchor="end" />
                         <YAxis tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} domain={[0, 100]} />
                         <ReTooltip
-                          contentStyle={{ background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)', borderRadius: 8 }}
+                          contentStyle={chartTooltipStyle}
                           labelStyle={{ color: 'var(--color-primary)' }}
                           itemStyle={{ color: 'var(--color-text-primary)' }}
                         />
@@ -532,23 +679,12 @@ const IntelligenceDetail: React.FC = () => {
                       </Box>
                     </AccordionSummary>
                     <AccordionDetails>
-                      {gc.title && (
-                        <Typography variant="subtitle2" sx={{ color: 'var(--color-primary)', mb: 1 }}>
-                          {gc.title}
-                        </Typography>
-                      )}
-                      <Typography
-                        sx={{
-                          color: 'var(--color-text-primary)',
-                          lineHeight: 1.7,
-                          whiteSpace: 'pre-wrap',
-                          fontSize: 14,
-                          maxHeight: 300,
-                          overflow: 'auto',
-                        }}
-                      >
-                        {gc.content}
-                      </Typography>
+                      <GeneratedContentPreview
+                        contentType={gc.content_type}
+                        title={gc.title}
+                        content={gc.content}
+                        imageUrl={gc.image_url}
+                      />
                     </AccordionDetails>
                   </Accordion>
                 ))}
@@ -574,6 +710,8 @@ const IntelligenceDetail: React.FC = () => {
           </TabPanel>
         </CardContent>
       </Card>
+
+      <ScoringSystemInfoDialog open={showScoringInfo} onClose={() => setShowScoringInfo(false)} />
     </Box>
   );
 };

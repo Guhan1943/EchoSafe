@@ -115,7 +115,7 @@ const AuditLogs: React.FC = () => {
                       <TableRow key={index}>
                         {Array.from({ length: 6 }).map((__, cellIndex) => (
                           <TableCell key={cellIndex} sx={{ borderBottom: '1px solid rgba(0,120,215,0.08)' }}>
-                            <Skeleton sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                            <Skeleton />
                           </TableCell>
                         ))}
                       </TableRow>

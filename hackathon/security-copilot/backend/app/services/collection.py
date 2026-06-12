@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.models.article import Article
 from app.models.source import Source
+from app.services.article_image import extract_image_from_rss_entry
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,7 @@ class CollectionService:
                         author=entry.get("author"),
                         published_at=entry.get("published_at"),
                         content_hash=content_hash,
+                        image_url=entry.get("image_url"),
                         status="new",
                     )
                     self.db.add(article)
@@ -133,6 +135,8 @@ class CollectionService:
                 elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
                     published_at = self._parse_date(entry.updated_parsed)
 
+                image_url = extract_image_from_rss_entry(entry)
+
                 entries.append(
                     {
                         "title": title,
@@ -141,6 +145,7 @@ class CollectionService:
                         "content": content,
                         "author": author,
                         "published_at": published_at,
+                        "image_url": image_url,
                         "external_id": getattr(entry, "id", None) or self._compute_hash(link),
                     }
                 )

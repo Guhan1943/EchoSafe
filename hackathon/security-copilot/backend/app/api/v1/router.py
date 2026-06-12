@@ -8,6 +8,8 @@ from app.api.v1 import (
     approvals,
     content,
     publishing,
+    channels,
+    recipients,
     analytics,
     audit,
     settings,
@@ -25,6 +27,8 @@ router.include_router(articles.router, prefix="/articles", tags=["Articles"])
 router.include_router(approvals.router, prefix="/approvals", tags=["Approvals"])
 router.include_router(content.router, prefix="/content", tags=["Content"])
 router.include_router(publishing.router, prefix="/publishing", tags=["Publishing"])
+router.include_router(channels.router, prefix="/channels", tags=["Publishing Channels"])
+router.include_router(recipients.router, prefix="/recipients", tags=["Client Recipients"])
 router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 router.include_router(audit.router, prefix="/audit", tags=["Audit"])
 router.include_router(settings.router, prefix="/settings", tags=["Settings"])

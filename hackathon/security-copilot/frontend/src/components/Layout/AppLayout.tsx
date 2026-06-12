@@ -101,7 +101,7 @@ const AppLayout: React.FC = () => {
             )}
 
             <Typography variant="h6" fontWeight={600} sx={{ flexGrow: 1 }}>
-              Security Intelligence Copilot
+              Security Intelligence
             </Typography>
 
             {user && (

@@ -7,6 +7,7 @@ import type {
   ArticleStatus,
   VerificationResult,
 } from '../types/article';
+import type { SourceCompareResponse } from '../types/comparison';
 
 export const articlesApi = {
   getArticles: async (params?: ArticleListParams): Promise<ArticleListResponse> => {
@@ -26,6 +27,11 @@ export const articlesApi = {
 
   updateArticleStatus: async (id: number, status: ArticleStatus): Promise<Article> => {
     const response = await apiClient.put<Article>(`/articles/${id}/status`, { status });
+    return response.data;
+  },
+
+  compareSources: async (id: number): Promise<SourceCompareResponse> => {
+    const response = await apiClient.get<SourceCompareResponse>(`/articles/${id}/compare-sources`);
     return response.data;
   },
 };

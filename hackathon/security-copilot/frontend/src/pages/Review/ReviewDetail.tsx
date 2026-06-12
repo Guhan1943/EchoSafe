@@ -25,6 +25,7 @@ import {
   RateReview as ReviewIcon,
   OpenInNew as OpenIcon,
 } from '@mui/icons-material';
+import { chartTooltipStyle } from '../../styles/formStyles';
 import {
   BarChart,
   Bar,
@@ -264,7 +265,7 @@ const ReviewDetail: React.FC = () => {
                     <XAxis dataKey="name" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} angle={-30} textAnchor="end" />
                     <YAxis tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} domain={[0, 100]} />
                     <ReTooltip
-                      contentStyle={{ background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)', borderRadius: 8 }}
+                      contentStyle={chartTooltipStyle}
                       labelStyle={{ color: 'var(--color-primary)' }}
                       itemStyle={{ color: 'var(--color-text-primary)' }}
                     />

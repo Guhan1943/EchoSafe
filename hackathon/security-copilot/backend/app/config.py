@@ -9,9 +9,14 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-4o-mini"
     ENVIRONMENT: str = "development"
+    ENCRYPTION_KEY: str = ""
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
-    PROJECT_NAME: str = "Security Intelligence Copilot"
+    PROJECT_NAME: str = "Security Intelligence"
     API_V1_PREFIX: str = "/api/v1"
+    FRONTEND_URL: str = "http://localhost:3000"
+    LINKEDIN_CLIENT_ID: str = ""
+    LINKEDIN_CLIENT_SECRET: str = ""
+    LINKEDIN_REDIRECT_URI: str = "http://localhost:5000/auth/linkedin/callback"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

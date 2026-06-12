@@ -1,5 +1,6 @@
 import logging
 import os
+import textwrap
 from datetime import datetime
 from typing import Optional
 
@@ -8,16 +9,100 @@ from sqlalchemy.orm import Session
 from app.models.article import Article
 from app.models.content import GeneratedContent
 from app.models.verification import VerificationResult
+from app.services.article_image import fetch_image_from_url, resolve_article_image
+from app.services.source_comparison import SourceComparisonService
 
 logger = logging.getLogger(__name__)
 
 CONTENT_TYPES = [
-    "executive_brief",
-    "customer_advisory",
-    "technical_analysis",
-    "newsletter",
     "social_media",
+    "email",
+    "newsletter",
+    "blog",
 ]
+
+FORMAT_INSTRUCTIONS = {
+    "email": (
+        "Output ONLY a ready-to-send email draft in plain text. Use exactly this structure:\n"
+        "────────────────────────────────────────\n"
+        "To: security-team@company.com\n"
+        "From: Security Intelligence <alerts@securitycopilot.dev>\n"
+        "Subject: [SEVERITY] Short subject line\n"
+        "────────────────────────────────────────\n\n"
+        "Dear Team,\n\n"
+        "[Opening paragraph — 2 sentences max]\n\n"
+        "WHAT HAPPENED\n"
+        "[Threat summary]\n\n"
+        "WHO IS AFFECTED\n"
+        "[Audience / systems]\n\n"
+        "RECOMMENDED ACTIONS\n"
+        "1. ...\n2. ...\n3. ...\n\n"
+        "ADDITIONAL RESOURCES\n"
+        "- Primary source: [url]\n\n"
+        "Best regards,\n"
+        "Security Intelligence Team\n"
+        "Security Copilot | alerts@securitycopilot.dev\n"
+        "Do NOT use markdown. Write as a real outbound email."
+    ),
+    "social_media": (
+        "Output ONLY a LinkedIn post in plain text. Match real LinkedIn style:\n"
+        "- Line 1: bold hook (use ALL CAPS sparingly or emoji once)\n"
+        "- Blank line between every short paragraph (1-3 sentences each)\n"
+        "- Use → or • for 3 short bullet takeaways\n"
+        "- End with engagement question + call to action\n"
+        "- Final line: 5-8 hashtags on one line\n"
+        "- Total length: 180-250 words\n"
+        "- NO email headers, NO markdown headings, NO 'Subject:' line\n"
+        "- Tone: professional, conversational, thought-leadership"
+    ),
+    "blog": (
+        "Output a blog article in Markdown formatted for a security company website:\n"
+        "---\n"
+        "title: \"Article Title\"\n"
+        "author: Security Intelligence Team\n"
+        "date: YYYY-MM-DD\n"
+        "category: Threat Intelligence\n"
+        "read_time: X min read\n"
+        "severity: HIGH\n"
+        "---\n\n"
+        "# Article Title\n\n"
+        "*Published [date] · X min read · Threat Intelligence*\n\n"
+        "> Lead quote or key insight in blockquote\n\n"
+        "## Introduction\n\n"
+        "## What Happened\n\n"
+        "## Technical Analysis\n\n"
+        "## Industry Context\n\n"
+        "## What You Should Do\n\n"
+        "## Conclusion\n\n"
+        "---\n"
+        "*Tags: comma, separated, tags*"
+    ),
+    "newsletter": (
+        "Output a security newsletter segment in plain text. Use this newsletter template:\n"
+        "╔══════════════════════════════════════════════════════╗\n"
+        "║     SECURITY INTELLIGENCE DIGEST                     ║\n"
+        "║     [Month Day, Year] · Weekly Threat Roundup          ║\n"
+        "╚══════════════════════════════════════════════════════╝\n\n"
+        "IN THIS ISSUE\n"
+        "  ▸ [Headline 1]\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "📌  FEATURE STORY\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "[Headline]\n"
+        "Severity: [LEVEL]  |  Trust Score: XX/100\n\n"
+        "[Story body — 2-3 short paragraphs]\n\n"
+        "WHY IT MATTERS\n"
+        "[Impact paragraph]\n\n"
+        "ACTION CHECKLIST\n"
+        "☐ Item 1\n☐ Item 2\n☐ Item 3\n\n"
+        "ALSO ON OUR RADAR\n"
+        "[Brief vendor/industry context — 2-3 lines]\n\n"
+        "──────────────────────────────────────────────────────\n"
+        "Security Intelligence · security@company.com\n"
+        "View online | Manage preferences\n"
+        "No markdown. Plain text newsletter layout only."
+    ),
+}
 
 
 class ContentGenerationService:
@@ -43,11 +128,13 @@ class ContentGenerationService:
         ctx = self._get_article_context(article_id)
 
         generator_map = {
+            "social_media": self.generate_social_media,
+            "email": self.generate_email,
+            "newsletter": self.generate_newsletter,
+            "blog": self.generate_blog,
             "executive_brief": self.generate_executive_brief,
             "customer_advisory": self.generate_customer_advisory,
             "technical_analysis": self.generate_technical_analysis,
-            "newsletter": self.generate_newsletter,
-            "social_media": self.generate_social_media,
         }
 
         generator = generator_map.get(content_type)
@@ -57,7 +144,10 @@ class ContentGenerationService:
         content_text = generator(ctx)
         title = self._make_title(content_type, ctx)
 
-        # Upsert by article_id + content_type
+        image_url = None
+        if content_type == "social_media":
+            image_url = self._resolve_social_image(article_id, ctx)
+
         record = (
             self.db.query(GeneratedContent)
             .filter(
@@ -73,12 +163,18 @@ class ContentGenerationService:
                 content_type=content_type,
                 title=title,
                 content=content_text,
+                image_url=image_url,
+                is_approved=ctx.get("status") in ("approved", "published"),
             )
             self.db.add(record)
         else:
             record.title = title
             record.content = content_text
             record.updated_at = datetime.utcnow()
+            if content_type == "social_media":
+                record.image_url = image_url
+            if ctx.get("status") in ("approved", "published"):
+                record.is_approved = True
 
         self.db.commit()
         self.db.refresh(record)
@@ -98,6 +194,10 @@ class ContentGenerationService:
         source_name = ""
         if article.source:
             source_name = article.source.name or ""
+
+        vendor_sources = self._load_vendor_comparison(article_id)
+        today = datetime.utcnow().strftime("%B %d, %Y")
+        iso_date = datetime.utcnow().strftime("%Y-%m-%d")
 
         return {
             "article_id": article.id,
@@ -119,9 +219,60 @@ class ContentGenerationService:
             "authenticity_score": verification.authenticity_score if verification else 0,
             "credibility_score": verification.credibility_score if verification else 0,
             "confidence": (verification.confidence or "unknown") if verification else "unknown",
+            "vendor_sources": vendor_sources,
+            "vendor_context": self._format_vendor_context(vendor_sources),
+            "today": today,
+            "iso_date": iso_date,
+            "image_url": article.image_url,
         }
 
-    def _ai_generate(self, prompt: str, system: str) -> str:
+    def _resolve_social_image(self, article_id: int, ctx: dict) -> Optional[str]:
+        article = self.db.query(Article).filter(Article.id == article_id).first()
+        image_url = resolve_article_image(ctx["url"], ctx.get("image_url"))
+        if image_url and article and not article.image_url:
+            article.image_url = image_url[:2048]
+            self.db.flush()
+        return image_url[:2048] if image_url else None
+
+    def _load_vendor_comparison(self, article_id: int) -> list[dict]:
+        try:
+            result = SourceComparisonService(self.db).compare_article(article_id)
+            return result.get("sources", [])
+        except Exception as exc:
+            logger.warning("Vendor comparison unavailable for article %s: %s", article_id, exc)
+            return []
+
+    @staticmethod
+    def _format_vendor_context(vendor_sources: list[dict]) -> str:
+        if not vendor_sources:
+            return "No related vendor coverage found."
+
+        blocks = []
+        for source in vendor_sources:
+            related = source.get("related")
+            if not related:
+                continue
+            terms = ", ".join(related.get("matched_terms") or []) or "general security"
+            blocks.append(
+                f"- {source['name']}: {related['title']} ({terms})"
+            )
+        return "\n".join(blocks) if blocks else "No related vendor coverage found."
+
+    def _build_intelligence_brief(self, ctx: dict) -> str:
+        cves = ", ".join(ctx["cves"]) if ctx["cves"] else "None identified"
+        return (
+            f"Title: {ctx['title']}\n"
+            f"Severity: {ctx['severity'].upper()} | Trust Score: {ctx['trust_score']}/100\n"
+            f"Source: {ctx['source_name']} | URL: {ctx['url']}\n"
+            f"Summary: {ctx['summary'] or ctx['content'][:600]}\n"
+            f"CVEs: {cves}\n"
+            f"Business Impact: {ctx['business_impact'] or 'Assess organizational exposure.'}\n"
+            f"Recommended Actions: {ctx['recommended_actions'] or 'Review and remediate.'}\n"
+            f"AI Analysis: {ctx['ai_analysis'] or 'See summary.'}\n"
+            f"Vendor context:\n{ctx['vendor_context']}"
+        )
+
+    def _ai_generate(self, prompt: str, system: str, *, max_tokens: int = 1000) -> str:
         api_key = os.environ.get("OPENAI_API_KEY") or ""
         from app.config import settings as app_settings
         if not api_key:
@@ -138,8 +289,8 @@ class ContentGenerationService:
                         {"role": "system", "content": system},
                         {"role": "user", "content": prompt},
                     ],
-                    temperature=0.4,
-                    max_tokens=800,
+                    temperature=0.35,
+                    max_tokens=max_tokens,
                 )
                 return response.choices[0].message.content or ""
             except Exception as exc:
@@ -149,208 +300,240 @@ class ContentGenerationService:
 
     def _make_title(self, content_type: str, ctx: dict) -> str:
         prefixes = {
-            "executive_brief": "Executive Brief: ",
-            "customer_advisory": "Customer Advisory: ",
-            "technical_analysis": "Technical Analysis: ",
-            "newsletter": "Newsletter Entry: ",
-            "social_media": "Social Post: ",
+            "social_media": "LinkedIn Post: ",
+            "email": "Email Draft: ",
+            "newsletter": "Newsletter: ",
+            "blog": "Blog Article: ",
         }
         prefix = prefixes.get(content_type, "")
-        article_title = ctx.get("title", "Security Intelligence Update")
-        return f"{prefix}{article_title}"[:1024]
+        return f"{prefix}{ctx.get('title', 'Security Intelligence Update')}"[:1024]
+
+    def _summary_text(self, ctx: dict, limit: int = 400) -> str:
+        return ctx["summary"] or ctx["content"][:limit] or "Details pending analyst review."
+
+    def _actions_list(self, ctx: dict) -> str:
+        if ctx["recommended_actions"]:
+            lines = [
+                line.strip()
+                for line in ctx["recommended_actions"].replace("•", "\n").split("\n")
+                if line.strip()
+            ]
+            if lines:
+                return "\n".join(f"{i}. {line.lstrip('0123456789.-) ')}" for i, line in enumerate(lines[:5], 1))
+        return "1. Review affected systems in your environment\n2. Apply vendor patches and mitigations\n3. Monitor for indicators of compromise"
+
+    def _vendor_radar_lines(self, ctx: dict) -> str:
+        lines = []
+        for source in ctx.get("vendor_sources", []):
+            related = source.get("related")
+            if related:
+                lines.append(f"  • {source['name']}: {related['title'][:80]}")
+        return "\n".join(lines) if lines else "  • Monitoring vendor advisories for related coverage."
 
     # ------------------------------------------------------------------ #
-    # Individual generators                                                  #
+    # Format-specific generators                                             #
     # ------------------------------------------------------------------ #
 
-    def generate_executive_brief(self, ctx: dict) -> str:
+    def generate_email(self, ctx: dict) -> str:
+        severity = ctx["severity"].upper()
+        subject = f"[{severity}] {ctx['title'][:90]}"
         system = (
-            "You are a cybersecurity communications specialist. "
-            "Write concise, business-focused security briefings for executive audiences."
+            "You are an expert security communications writer. "
+            + FORMAT_INSTRUCTIONS["email"]
         )
-        prompt = (
-            f"Write a 2-3 paragraph executive brief for the following security intelligence:\n\n"
-            f"Title: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()}\n"
-            f"Trust Score: {ctx['trust_score']}/100\n"
-            f"Source: {ctx['source_name']}\n"
-            f"Summary: {ctx['summary'] or ctx['content'][:500]}\n"
-            f"Business Impact: {ctx['business_impact']}\n"
-            f"CVEs: {', '.join(ctx['cves']) if ctx['cves'] else 'None identified'}\n"
-            f"Affected Products: {', '.join(ctx['affected_products']) if ctx['affected_products'] else 'Under investigation'}\n\n"
-            "Focus on business risk and required executive decisions. Avoid excessive technical jargon."
-        )
-        result = self._ai_generate(prompt, system)
+        prompt = f"Draft an email using the intelligence below.\n\n{self._build_intelligence_brief(ctx)}"
+        result = self._ai_generate(prompt, system, max_tokens=1200)
         if result:
             return result
 
-        # Template fallback
-        cve_str = ", ".join(ctx["cves"]) if ctx["cves"] else "None identified"
-        products_str = (
-            ", ".join(ctx["affected_products"]) if ctx["affected_products"] else "Under investigation"
-        )
-        return (
-            f"EXECUTIVE BRIEF: {ctx['title']}\n\n"
-            f"Severity: {ctx['severity'].upper()} | Trust Score: {ctx['trust_score']}/100\n\n"
-            f"Summary\n"
-            f"{ctx['summary'] or ctx['content'][:400] or 'No summary available.'}\n\n"
-            f"Business Impact\n"
-            f"{ctx['business_impact'] or 'Impact assessment pending manual review.'}\n\n"
-            f"Key Details\n"
-            f"- CVEs: {cve_str}\n"
-            f"- Affected Products: {products_str}\n"
-            f"- Source: {ctx['source_name']}\n\n"
-            f"Recommended Actions\n"
-            f"{ctx['recommended_actions'] or 'Review with security team and apply patches as available.'}"
-        )
+        actions = self._actions_list(ctx)
+        return textwrap.dedent(
+            f"""\
+            ────────────────────────────────────────
+            To: security-team@company.com
+            From: Security Intelligence <alerts@securitycopilot.dev>
+            Subject: {subject}
+            ────────────────────────────────────────
 
-    def generate_customer_advisory(self, ctx: dict) -> str:
+            Dear Team,
+
+            We are sharing a validated {severity} severity intelligence alert (Trust Score: {ctx['trust_score']}/100) that requires your attention.
+
+            WHAT HAPPENED
+            {self._summary_text(ctx)}
+
+            WHO IS AFFECTED
+            Organizations using systems or services referenced in this intelligence should assess exposure immediately.
+
+            RECOMMENDED ACTIONS
+            {actions}
+
+            ADDITIONAL RESOURCES
+            - Primary source ({ctx['source_name']}): {ctx['url']}
+            - Vendor context: see internal comparison report
+
+            Best regards,
+            Security Intelligence Team
+            Security Copilot | alerts@securitycopilot.dev
+            """
+        ).strip()
+
+    def generate_social_media(self, ctx: dict) -> str:
         system = (
-            "You are a security advisory writer. "
-            "Write clear, actionable advisories for business customers."
+            "You are a cybersecurity LinkedIn content strategist. "
+            + FORMAT_INSTRUCTIONS["social_media"]
         )
-        prompt = (
-            f"Write a customer-facing security advisory for:\n\n"
-            f"Title: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()}\n"
-            f"Summary: {ctx['summary'] or ctx['content'][:500]}\n"
-            f"CVEs: {', '.join(ctx['cves']) if ctx['cves'] else 'None'}\n"
-            f"Affected Products: {', '.join(ctx['affected_products']) if ctx['affected_products'] else 'TBD'}\n"
-            f"Recommended Actions: {ctx['recommended_actions']}\n\n"
-            "Include: overview, who is affected, what to do, and timeline for action."
-        )
-        result = self._ai_generate(prompt, system)
+        prompt = f"Write a LinkedIn post from this intelligence.\n\n{self._build_intelligence_brief(ctx)}"
+        result = self._ai_generate(prompt, system, max_tokens=650)
         if result:
             return result
 
-        cve_str = ", ".join(ctx["cves"]) if ctx["cves"] else "None identified"
-        products_str = (
-            ", ".join(ctx["affected_products"]) if ctx["affected_products"] else "Under investigation"
-        )
-        default_actions = (
-            "1. Review your environment for affected systems.\n"
-            "2. Apply available patches immediately.\n"
-            "3. Contact your security team for further guidance."
-        )
-        actions = ctx["recommended_actions"] or default_actions
-        return (
-            f"CUSTOMER SECURITY ADVISORY\n\n"
-            f"Subject: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()}\n"
-            f"Date: {datetime.utcnow().strftime('%Y-%m-%d')}\n\n"
-            f"Overview\n"
-            f"{ctx['summary'] or 'A security issue has been identified that may affect your environment.'}\n\n"
-            f"Who Is Affected\n"
-            f"Affected Products/Systems: {products_str}\n"
-            f"CVE References: {cve_str}\n\n"
-            f"What You Should Do\n"
-            f"{actions}\n\n"
-            f"Additional Information\n"
-            f"Source: {ctx['source_name']}\n"
-            f"URL: {ctx['url']}"
-        )
+        hashtags = "#CyberSecurity #ThreatIntelligence #InfoSec #SecurityAwareness #CISO"
+        if ctx["cves"]:
+            hashtags += " " + " ".join(f"#{c.replace('-', '')}" for c in ctx["cves"][:2])
+        if ctx["severity"] in ("critical", "high"):
+            hashtags += " #SecurityAlert"
 
-    def generate_technical_analysis(self, ctx: dict) -> str:
+        summary = self._summary_text(ctx, 280)
+        return textwrap.dedent(
+            f"""\
+            🚨 NEW THREAT INTELLIGENCE — {ctx['severity'].upper()} SEVERITY
+
+            {ctx['title']}
+
+            {summary}
+
+            Here is what security leaders need to know right now:
+
+            → Trust Score: {ctx['trust_score']}/100 — validated through our intelligence pipeline
+            → Cross-referenced with CrowdStrike, SentinelOne, and Microsoft research
+            → Action required: review exposure and apply mitigations this week
+
+            {ctx['business_impact'][:200] if ctx['business_impact'] else 'Assess your environment and prioritize remediation based on your risk profile.'}
+
+            How is your team handling threats like this? Drop a comment — I read every one.
+
+            🔗 Full analysis: {ctx['url']}
+
+            {hashtags}
+            """
+        ).strip()
+
+    def generate_blog(self, ctx: dict) -> str:
         system = (
-            "You are a senior cybersecurity analyst. "
-            "Write detailed technical analyses for security engineers and analysts."
+            "You are a senior security blog editor. "
+            + FORMAT_INSTRUCTIONS["blog"]
         )
-        prompt = (
-            f"Write a detailed technical security analysis for:\n\n"
-            f"Title: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()}\n"
-            f"Full Content: {ctx['content'][:1500] or ctx['summary']}\n"
-            f"CVEs: {', '.join(ctx['cves']) if ctx['cves'] else 'None'}\n"
-            f"Affected Products: {', '.join(ctx['affected_products']) if ctx['affected_products'] else 'TBD'}\n"
-            f"AI Analysis: {ctx['ai_analysis']}\n\n"
-            "Include: technical description, attack vectors, CVSS impact, affected versions, "
-            "detection methods, and specific mitigation steps."
-        )
-        result = self._ai_generate(prompt, system)
+        prompt = f"Write a blog article from this intelligence.\n\n{self._build_intelligence_brief(ctx)}"
+        result = self._ai_generate(prompt, system, max_tokens=2200)
         if result:
             return result
 
-        cve_str = ", ".join(ctx["cves"]) if ctx["cves"] else "None identified"
-        products_str = (
-            ", ".join(ctx["affected_products"]) if ctx["affected_products"] else "Under investigation"
-        )
-        return (
-            f"TECHNICAL ANALYSIS REPORT\n\n"
-            f"Title: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()} | Confidence: {ctx['confidence'].upper()}\n"
-            f"Authenticity Score: {ctx['authenticity_score']}/100 | Credibility Score: {ctx['credibility_score']}/100\n"
-            f"Date: {datetime.utcnow().strftime('%Y-%m-%d')}\n\n"
-            f"CVE References\n{cve_str}\n\n"
-            f"Affected Products\n{products_str}\n\n"
-            f"Technical Description\n"
-            f"{ctx['content'][:800] or ctx['summary'] or 'Detailed technical content not available.'}\n\n"
-            f"AI Analysis\n"
-            f"{ctx['ai_analysis'] or 'AI analysis not available.'}\n\n"
-            f"Recommended Mitigations\n"
-            f"{ctx['recommended_actions'] or 'Apply vendor patches. Enable monitoring. Review access controls.'}\n\n"
-            f"References\n"
-            f"- Source: {ctx['source_name']}\n"
-            f"- URL: {ctx['url']}"
-        )
+        title = ctx["title"]
+        summary = self._summary_text(ctx, 500)
+        vendor_block = self._vendor_radar_lines(ctx).replace("  •", "-")
+        lines = [
+            "---",
+            f'title: "{title}"',
+            "author: Security Intelligence Team",
+            f"date: {ctx['iso_date']}",
+            "category: Threat Intelligence",
+            "read_time: 5 min read",
+            f"severity: {ctx['severity'].upper()}",
+            "---",
+            "",
+            f"# {title}",
+            "",
+            f"*Published {ctx['today']} · 5 min read · Threat Intelligence · Trust Score {ctx['trust_score']}/100*",
+            "",
+            f"> {summary[:200]}{'...' if len(summary) > 200 else ''}",
+            "",
+            "## Introduction",
+            "",
+            summary,
+            "",
+            "## What Happened",
+            "",
+            ctx["ai_analysis"] or ctx["content"][:600] or "Our team validated this intelligence through automated collection and analyst review.",
+            "",
+            "## Industry Context",
+            "",
+            "Leading vendors are also tracking related activity:",
+            "",
+            vendor_block,
+            "",
+            "## Impact Assessment",
+            "",
+            ctx["business_impact"] or "Organizations should evaluate whether critical business systems are exposed and plan remediation accordingly.",
+            "",
+            "## What You Should Do",
+            "",
+            self._actions_list(ctx),
+            "",
+            "## Conclusion",
+            "",
+            "Staying ahead of emerging threats requires continuous monitoring and rapid response. Subscribe to our intelligence feed for real-time updates.",
+            "",
+            "---",
+            "",
+            f"*Tags: threat intelligence, {ctx['severity']}, security operations*",
+        ]
+        return "\n".join(lines)
 
     def generate_newsletter(self, ctx: dict) -> str:
         system = (
             "You are a security newsletter editor. "
-            "Write concise, engaging security news digest entries."
+            + FORMAT_INSTRUCTIONS["newsletter"]
         )
-        prompt = (
-            f"Write a newsletter digest entry (150-200 words) for:\n\n"
-            f"Title: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()}\n"
-            f"Summary: {ctx['summary'] or ctx['content'][:400]}\n"
-            f"CVEs: {', '.join(ctx['cves']) if ctx['cves'] else 'None'}\n\n"
-            "Write in a professional but accessible tone suitable for a weekly security digest."
-        )
-        result = self._ai_generate(prompt, system)
+        prompt = f"Write a newsletter feature story from this intelligence.\n\n{self._build_intelligence_brief(ctx)}"
+        result = self._ai_generate(prompt, system, max_tokens=1400)
         if result:
             return result
 
-        cve_str = f" ({', '.join(ctx['cves'])})" if ctx["cves"] else ""
-        return (
-            f"[{ctx['severity'].upper()}] {ctx['title']}{cve_str}\n\n"
-            f"{ctx['summary'] or ctx['content'][:300] or 'Details pending.'}\n\n"
-            f"Severity: {ctx['severity'].upper()} | Trust Score: {ctx['trust_score']}/100\n"
-            f"Source: {ctx['source_name']} | More info: {ctx['url']}"
-        )
+        headline = ctx["title"]
+        summary = self._summary_text(ctx, 350)
+        lines = [
+            "╔══════════════════════════════════════════════════════╗",
+            "║     SECURITY INTELLIGENCE DIGEST                     ║",
+            f"║     {ctx['today']} · Weekly Threat Roundup          ║",
+            "╚══════════════════════════════════════════════════════╝",
+            "",
+            "IN THIS ISSUE",
+            f"  ▸ {headline[:70]}{'...' if len(headline) > 70 else ''}",
+            "",
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+            "📌  FEATURE STORY",
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+            "",
+            headline,
+            "",
+            f"Severity: {ctx['severity'].upper()}  |  Trust Score: {ctx['trust_score']}/100",
+            "",
+            summary,
+            "",
+            "WHY IT MATTERS",
+            "",
+            ctx["business_impact"] or "This development may affect organizations relying on affected systems. Security teams should assess exposure and plan remediation within the current sprint.",
+            "",
+            "ACTION CHECKLIST",
+            "☐ Review whether your environment is affected",
+            "☐ Apply vendor patches and configuration hardening",
+            "☐ Brief stakeholders and update incident playbooks",
+            "",
+            "ALSO ON OUR RADAR",
+            self._vendor_radar_lines(ctx),
+            "",
+            "──────────────────────────────────────────────────────",
+            "Security Intelligence · alerts@securitycopilot.dev",
+            f"View online: {ctx['url']}  |  Manage preferences",
+        ]
+        return "\n".join(lines)
 
-    def generate_social_media(self, ctx: dict) -> str:
-        system = (
-            "You are a cybersecurity social media manager. "
-            "Write professional LinkedIn posts that inform and engage security professionals."
-        )
-        cve_str = " ".join(ctx["cves"]) if ctx["cves"] else ""
-        prompt = (
-            f"Write a LinkedIn-ready security awareness post (~200 words) for:\n\n"
-            f"Title: {ctx['title']}\n"
-            f"Severity: {ctx['severity'].upper()}\n"
-            f"Key Points: {ctx['summary'] or ctx['content'][:300]}\n"
-            f"CVEs: {cve_str or 'None'}\n\n"
-            "Include relevant hashtags such as #CyberSecurity #ThreatIntelligence. "
-            "Keep a professional, informative tone. End with a call to action."
-        )
-        result = self._ai_generate(prompt, system)
-        if result:
-            return result
+    def generate_executive_brief(self, ctx: dict) -> str:
+        return self.generate_email(ctx)
 
-        hashtags = "#CyberSecurity #ThreatIntelligence #InfoSec #SecurityAlert"
-        if ctx["cves"]:
-            hashtags += " " + " ".join(f"#{c.replace('-', '')}" for c in ctx["cves"][:3])
-        if ctx["severity"] in ("critical", "high"):
-            hashtags += " #CriticalVulnerability"
+    def generate_customer_advisory(self, ctx: dict) -> str:
+        return self.generate_email(ctx)
 
-        return (
-            f"Security Alert: {ctx['title']}\n\n"
-            f"Severity: {ctx['severity'].upper()} | Trust Score: {ctx['trust_score']}/100\n\n"
-            f"{ctx['summary'] or 'A new security threat has been identified. Stay informed and take action.'}\n\n"
-            f"Key Takeaways:\n"
-            f"- Review your environment for exposure\n"
-            f"- Apply available patches promptly\n"
-            f"- Monitor for indicators of compromise\n\n"
-            f"Read more: {ctx['url']}\n\n"
-            f"{hashtags}"
-        )
+    def generate_technical_analysis(self, ctx: dict) -> str:
+        return self.generate_blog(ctx)

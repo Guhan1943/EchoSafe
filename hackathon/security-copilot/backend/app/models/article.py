@@ -26,6 +26,7 @@ class Article(Base):
     severity: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
     trust_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     content_hash: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    image_url: Mapped[str | None] = mapped_column(String(2048), nullable=True)
 
     # Relationships
     source: Mapped["Source"] = relationship(  # noqa: F821

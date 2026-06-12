@@ -42,6 +42,7 @@ import type { User } from '../../types/auth';
 import type { Setting } from '../../types/settings';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
+import PublishingChannelsPanel from './PublishingChannelsPanel';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -183,6 +184,7 @@ const AdminPanel: React.FC = () => {
           >
             <Tab label="Users" />
             <Tab label="System Settings" icon={<SettingsIcon fontSize="small" />} iconPosition="start" />
+            <Tab label="Publishing Channels" />
           </Tabs>
         </Box>
 
@@ -221,7 +223,7 @@ const AdminPanel: React.FC = () => {
                         <TableRow key={index}>
                           {Array.from({ length: 5 }).map((__, cellIndex) => (
                             <TableCell key={cellIndex} sx={{ borderBottom: '1px solid rgba(0,120,215,0.08)' }}>
-                              <Skeleton sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                              <Skeleton />
                             </TableCell>
                           ))}
                         </TableRow>
@@ -271,7 +273,7 @@ const AdminPanel: React.FC = () => {
             {settingsLoading ? (
               <Box>
                 {Array.from({ length: 3 }).map((_, index) => (
-                  <Skeleton key={index} height={72} sx={{ bgcolor: 'rgba(255,255,255,0.08)', mb: 1 }} />
+                  <Skeleton key={index} height={72} sx={{ mb: 1 }} />
                 ))}
               </Box>
             ) : (
@@ -309,6 +311,10 @@ const AdminPanel: React.FC = () => {
               </Box>
             )}
           </TabPanel>
+
+          <TabPanel value={tab} index={2}>
+            <PublishingChannelsPanel />
+          </TabPanel>
         </CardContent>
       </Card>
 
@@ -317,7 +323,6 @@ const AdminPanel: React.FC = () => {
         onClose={() => setAddOpen(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
         <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Create User</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
@@ -351,7 +356,6 @@ const AdminPanel: React.FC = () => {
         onClose={() => setEditUser(null)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
         <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Edit User</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
@@ -396,7 +400,6 @@ const AdminPanel: React.FC = () => {
       <Dialog
         open={!!deleteUser}
         onClose={() => setDeleteUser(null)}
-        PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
         <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Delete User</DialogTitle>
         <DialogContent>

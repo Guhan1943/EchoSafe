@@ -10,6 +10,7 @@ class GeneratedContentResponse(BaseModel):
     content_type: str
     title: Optional[str] = None
     content: str
+    image_url: Optional[str] = None
     is_approved: bool
     created_at: datetime
     updated_at: datetime
@@ -30,6 +31,7 @@ class PublishedContentResponse(BaseModel):
     published_by: Optional[int] = None
     platform: str
     status: str
+    response_message: Optional[str] = None
     published_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

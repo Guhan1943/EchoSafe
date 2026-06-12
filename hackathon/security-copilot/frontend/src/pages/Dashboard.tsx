@@ -309,7 +309,7 @@ const Dashboard: React.FC = () => {
                           <TableRow key={i}>
                             {Array.from({ length: 5 }).map((_, j) => (
                               <TableCell key={j} sx={{ borderBottom: '1px solid rgba(0,120,215,0.1)' }}>
-                                <Skeleton sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                                <Skeleton />
                               </TableCell>
                             ))}
                           </TableRow>

@@ -29,17 +29,23 @@ class ContentRepository(BaseRepository[GeneratedContent]):
         return self.db.execute(stmt).scalar_one_or_none()
 
     def get_all_with_pagination(
-        self, skip: int = 0, limit: int = 20
+        self, skip: int = 0, limit: int = 20, approved_only: bool = False
     ) -> tuple[list[GeneratedContent], int]:
-        count_stmt = select(func.count()).select_from(GeneratedContent)
-        total = self.db.execute(count_stmt).scalar_one()
-        stmt = (
-            select(GeneratedContent)
-            .order_by(GeneratedContent.created_at.desc())
+        from app.models.article import Article
+
+        query = self.db.query(GeneratedContent)
+        if approved_only:
+            query = query.join(Article, GeneratedContent.article_id == Article.id).filter(
+                GeneratedContent.is_approved.is_(True),
+                Article.status.in_(["approved", "published"]),
+            )
+        total = query.count()
+        items = (
+            query.order_by(GeneratedContent.created_at.desc())
             .offset(skip)
             .limit(limit)
+            .all()
         )
-        items = list(self.db.execute(stmt).scalars().all())
         return items, total
 
 

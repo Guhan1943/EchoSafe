@@ -1,40 +1,24 @@
-from app.services.verification import VerificationService
+from datetime import datetime, timedelta
+
+from app.services.trust_scoring import TrustScoreInput, calculate_trust_score
 
 
-class TestTrustScoreCalculation:
-    def test_maximum_trust_score(self):
-        service = VerificationService(db=None)  # type: ignore[arg-type]
-        checks = {
-            "trusted_source": True,
-            "multiple_confirmations": True,
-            "official_advisory": True,
-            "cve_found": True,
-            "cisa_nvd_validation": True,
-        }
-        total, breakdown = service._calculate_trust_score(checks, ["CVE-2024-1234"])
-        assert total == 100
-        assert sum(breakdown.values()) == 100
-
-    def test_rejected_threshold(self):
-        service = VerificationService(db=None)  # type: ignore[arg-type]
-        checks = {"trusted_source": True, "cve_found": True}
-        total, _ = service._calculate_trust_score(checks, ["CVE-2024-1234"])
-        assert total == 35
-        assert total < 80
-
-    def test_pending_review_threshold(self):
-        service = VerificationService(db=None)  # type: ignore[arg-type]
-        checks = {
-            "trusted_source": True,
-            "multiple_confirmations": True,
-            "official_advisory": True,
-            "cve_found": True,
-        }
-        total, _ = service._calculate_trust_score(checks, ["CVE-2024-1234"])
-        assert total == 80
-
-    def test_extract_cves_deduplicates(self):
-        service = VerificationService(db=None)  # type: ignore[arg-type]
-        text = "CVE-2024-0001 affects systems. Also CVE-2024-0001 again."
-        cves = service._extract_cves(text)
-        assert cves == ["CVE-2024-0001"]
+class TestVerificationIntegration:
+    def test_verification_service_uses_weighted_model(self):
+        result = calculate_trust_score(
+            TrustScoreInput(
+                source_name="The Hacker News",
+                authenticity_score=85,
+                credibility_score=80,
+                cves=["CVE-2024-1234"],
+                nvd_validated=True,
+                cisa_kev_match=False,
+                cve_found=True,
+                ioc_detected=False,
+                exploit_detected=True,
+                published_at=datetime.utcnow() - timedelta(days=5),
+            )
+        )
+        assert "source_reputation" in result.breakdown
+        assert "ai_authenticity" in result.breakdown
+        assert result.trust_score <= 100

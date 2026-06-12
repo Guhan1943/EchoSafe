@@ -120,7 +120,7 @@ const AnalyticsDashboard: React.FC = () => {
                 Articles by Severity
               </Typography>
               {overviewLoading ? (
-                <Skeleton height={260} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                <Skeleton height={260} />
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <PieChart>
@@ -145,11 +145,11 @@ const AnalyticsDashboard: React.FC = () => {
                 Trust Score Distribution
               </Typography>
               {trustLoading ? (
-                <Skeleton height={260} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                <Skeleton height={260} />
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={trustScores?.distribution ?? []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.08)" />
                     <XAxis dataKey="range" stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
                     <YAxis stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
                     <Tooltip />
@@ -172,11 +172,11 @@ const AnalyticsDashboard: React.FC = () => {
                 Workflow Status
               </Typography>
               {overviewLoading ? (
-                <Skeleton height={260} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                <Skeleton height={260} />
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={statusData} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.08)" />
                     <XAxis type="number" stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
                     <YAxis type="category" dataKey="name" width={120} stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} />
                     <Tooltip />
@@ -195,7 +195,7 @@ const AnalyticsDashboard: React.FC = () => {
                 Top Intelligence Sources
               </Typography>
               {sourcesLoading ? (
-                <Skeleton height={260} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                <Skeleton height={260} />
               ) : (
                 <Box sx={{ overflowX: 'auto' }}>
                   <Table size="small">

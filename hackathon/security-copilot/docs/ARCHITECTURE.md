@@ -2,7 +2,7 @@
 
 ## Overview
 
-Security Intelligence Copilot follows **Clean Architecture** with a feature-based modular structure:
+Security Intelligence follows **Clean Architecture** with a feature-based modular structure:
 
 ```
 backend/app/

@@ -23,6 +23,8 @@ import AuditLogs from './pages/Admin/AuditLogs';
 import ThreatFeed from './pages/Threats/ThreatFeed';
 import ThreatDetail from './pages/Threats/ThreatDetail';
 import ThreatDashboard from './pages/Threats/ThreatDashboard';
+import PublishingChannelsPage from './pages/Publishing/PublishingChannelsPage';
+import ClientMailsPage from './pages/Publishing/ClientMailsPage';
 
 // Layout wrapper that enforces auth then renders AppLayout with nested routes
 const ProtectedLayout: React.FC = () => (
@@ -93,6 +95,24 @@ const App: React.FC = () => {
           <Route path="/threats" element={<ThreatFeed />} />
           <Route path="/threats/:id" element={<ThreatDetail />} />
           <Route path="/threat-dashboard" element={<ThreatDashboard />} />
+
+          <Route
+            path="/publishing-channels"
+            element={
+              <PrivateRoute roles={['admin']}>
+                <PublishingChannelsPage />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/client-mails"
+            element={
+              <PrivateRoute roles={['analyst', 'admin']}>
+                <ClientMailsPage />
+              </PrivateRoute>
+            }
+          />
 
           <Route
             path="/admin"

@@ -16,6 +16,7 @@ class GeneratedContent(Base):
     content_type: Mapped[str] = mapped_column(String(50), nullable=False)
     title: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     content: Mapped[str] = mapped_column(Text, nullable=False)
+    image_url: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
@@ -48,6 +49,7 @@ class PublishedContent(Base):
     )
     platform: Mapped[str] = mapped_column(String(100), default="internal", nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="published", nullable=False)
+    response_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     published_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )

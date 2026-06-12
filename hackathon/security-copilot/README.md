@@ -1,4 +1,4 @@
-# Security Intelligence Copilot (MVP)
+# Security Intelligence (MVP)
 
 AI-powered cybersecurity intelligence platform that collects news from trusted sources, verifies findings with AI, routes them for analyst review, generates stakeholder-specific content, and publishes approved communications.
 

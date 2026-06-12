@@ -18,15 +18,18 @@ services:
 
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     ports:
       - "8000:8000"
+      - "5000:8000"
     environment:
       - DATABASE_URL=postgresql://copilot:copilot_secret@postgres:5432/security_copilot
-      - SECRET_KEY=dev-secret-key-change-in-production-minimum-32-chars
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ENVIRONMENT=development
     depends_on:
       postgres:
+        condition: service_healthy
+      mailpit:
         condition: service_healthy
     volumes:
       - ./backend:/app
@@ -39,12 +42,24 @@ services:
       - "3000:3000"
     environment:
       - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_ENVIRONMENT=development
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
       - /app/node_modules
     command: npm run dev -- --host 0.0.0.0
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
   postgres_data:

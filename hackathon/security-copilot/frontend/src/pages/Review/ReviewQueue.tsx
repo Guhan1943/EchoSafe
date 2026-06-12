@@ -106,8 +106,8 @@ const ReviewQueue: React.FC = () => {
               <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)' }}>
                 <CardContent>
                   <Skeleton height={24} sx={{ bgcolor: 'var(--color-bg-subtle)', mb: 1 }} />
-                  <Skeleton height={16} width="60%" sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
-                  <Skeleton height={60} sx={{ bgcolor: 'rgba(255,255,255,0.08)', mt: 1 }} />
+                  <Skeleton height={16} width="60%" />
+                  <Skeleton height={60} sx={{ mt: 1 }} />
                 </CardContent>
               </Card>
             </Grid>
@@ -207,7 +207,7 @@ const ReviewQueue: React.FC = () => {
                       sx={{
                         height: 4,
                         borderRadius: 2,
-                        bgcolor: 'rgba(255,255,255,0.08)',
+                        bgcolor: 'rgba(0,0,0,0.08)',
                         '& .MuiLinearProgress-bar': {
                           bgcolor: article.trust_score >= 70 ? '#388e3c' : article.trust_score >= 40 ? '#f9a825' : '#d32f2f',
                           borderRadius: 2,

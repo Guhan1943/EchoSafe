@@ -32,8 +32,8 @@ export const contentApi = {
     return response.data;
   },
 
-  publishContent: async (contentId: number): Promise<PublishedContent> => {
-    const response = await apiClient.post<PublishedContent>(`/publishing/${contentId}/publish`);
+  publishContent: async (contentId: number, data?: { recipients?: string[] }): Promise<PublishedContent> => {
+    const response = await apiClient.post<PublishedContent>(`/publishing/${contentId}/publish`, data ?? {});
     return response.data;
   },
 

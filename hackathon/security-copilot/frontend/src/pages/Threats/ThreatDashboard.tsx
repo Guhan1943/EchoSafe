@@ -116,7 +116,7 @@ const ThreatDashboard: React.FC = () => {
           <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 300 }}>
             <CardContent sx={{ height: '100%' }}>
               <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 1 }}>Severity Distribution</Typography>
-              {statsLoading ? <Skeleton height={220} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} /> : (
+              {statsLoading ? <Skeleton height={220} /> : (
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
                     <Pie data={severityChartData} dataKey="count" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
@@ -137,7 +137,7 @@ const ThreatDashboard: React.FC = () => {
           <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 300 }}>
             <CardContent sx={{ height: '100%' }}>
               <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 1 }}>Threats by Source</Typography>
-              {statsLoading ? <Skeleton height={220} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} /> : (
+              {statsLoading ? <Skeleton height={220} /> : (
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={sourceChartData}>
                     <XAxis dataKey="name" stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
@@ -156,7 +156,7 @@ const ThreatDashboard: React.FC = () => {
           <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid rgba(211,47,47,0.3)', borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>High Risk Threats</Typography>
-              {hrLoading ? <Skeleton height={200} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} /> : (
+              {hrLoading ? <Skeleton height={200} /> : (
                 <Box sx={{ overflowX: 'auto' }}>
                   <Table size="small">
                     <TableHead>

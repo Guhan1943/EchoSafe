@@ -18,6 +18,7 @@ class ArticleResponse(BaseModel):
     status: str
     severity: Optional[str] = None
     trust_score: int
+    image_url: Optional[str] = None
     created_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -40,6 +41,7 @@ class VerificationResultResponse(BaseModel):
     business_impact: Optional[str] = None
     ai_analysis: Optional[str] = None
     trust_score_breakdown: Optional[Any] = None
+    trust_level: Optional[str] = None
     cve_references: Optional[Any] = None
     sources_checked: Optional[Any] = None
     affected_products: Optional[Any] = None

@@ -32,6 +32,7 @@ export interface Article {
   severity: ArticleSeverity | null;
   trust_score: number;
   content_hash: string | null;
+  image_url?: string | null;
 }
 
 export interface VerificationResult {
@@ -44,6 +45,7 @@ export interface VerificationResult {
   business_impact: string | null;
   ai_analysis: string | null;
   trust_score_breakdown: Record<string, number> | null;
+  trust_level: string | null;
   cve_references: string[] | null;
   sources_checked: Array<{ name: string; found: boolean }> | null;
   affected_products: string[] | null;
@@ -60,6 +62,7 @@ export interface GeneratedContentSummary {
   content_type: string;
   title: string | null;
   content: string;
+  image_url: string | null;
   is_approved: boolean;
   created_at: string;
   updated_at: string;

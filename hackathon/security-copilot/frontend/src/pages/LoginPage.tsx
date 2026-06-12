@@ -54,7 +54,7 @@ const LoginPage: React.FC = () => {
               Security Intelligence
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Copilot MVP
+              Security Intelligence
             </Typography>
           </Box>
 

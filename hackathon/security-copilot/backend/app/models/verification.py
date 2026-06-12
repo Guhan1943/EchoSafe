@@ -20,6 +20,7 @@ class VerificationResult(Base):
     business_impact: Mapped[str | None] = mapped_column(Text, nullable=True)
     ai_analysis: Mapped[str | None] = mapped_column(Text, nullable=True)
     trust_score_breakdown: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    trust_level: Mapped[str | None] = mapped_column(String(50), nullable=True)
     cve_references: Mapped[list | None] = mapped_column(JSON, nullable=True)
     sources_checked: Mapped[list | None] = mapped_column(JSON, nullable=True)
     affected_products: Mapped[list | None] = mapped_column(JSON, nullable=True)

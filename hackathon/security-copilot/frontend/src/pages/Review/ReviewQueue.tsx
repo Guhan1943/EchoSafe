@@ -75,11 +75,11 @@ const ReviewQueue: React.FC = () => {
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700 }}>
+          <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
             Review Queue
           </Typography>
           {data && (
-            <Typography variant="body2" sx={{ color: '#8da9c4' }}>
+            <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
               {data.total} article{data.total !== 1 ? 's' : ''} pending review
             </Typography>
           )}
@@ -90,8 +90,8 @@ const ReviewQueue: React.FC = () => {
           onChange={(_, v) => { if (v) setFilter(v); }}
           size="small"
           sx={{
-            '& .MuiToggleButton-root': { color: '#8da9c4', borderColor: 'rgba(0,120,215,0.3)' },
-            '& .Mui-selected': { color: '#0078d4', bgcolor: 'rgba(0,120,215,0.1) !important' },
+            '& .MuiToggleButton-root': { color: 'var(--color-text-secondary)', borderColor: 'rgba(0,120,215,0.3)' },
+            '& .Mui-selected': { color: 'var(--color-primary)', bgcolor: 'var(--color-border-primary) !important' },
           }}
         >
           <ToggleButton value="pending_manual_review">Pending Review</ToggleButton>
@@ -103,9 +103,9 @@ const ReviewQueue: React.FC = () => {
         <Grid container spacing={2}>
           {Array.from({ length: 6 }).map((_, i) => (
             <Grid item xs={12} sm={6} lg={4} key={i}>
-              <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)' }}>
+              <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)' }}>
                 <CardContent>
-                  <Skeleton height={24} sx={{ bgcolor: 'rgba(255,255,255,0.1)', mb: 1 }} />
+                  <Skeleton height={24} sx={{ bgcolor: 'var(--color-bg-subtle)', mb: 1 }} />
                   <Skeleton height={16} width="60%" sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
                   <Skeleton height={60} sx={{ bgcolor: 'rgba(255,255,255,0.08)', mt: 1 }} />
                 </CardContent>
@@ -114,11 +114,11 @@ const ReviewQueue: React.FC = () => {
           ))}
         </Grid>
       ) : data?.items.length === 0 ? (
-        <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+        <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
           <CardContent sx={{ textAlign: 'center', py: 6 }}>
-            <Typography sx={{ color: '#4a9ede', fontSize: 48, mb: 2 }}>✓</Typography>
-            <Typography variant="h6" sx={{ color: '#e8f4fd' }}>Queue is empty</Typography>
-            <Typography variant="body2" sx={{ color: '#8da9c4' }}>
+            <Typography sx={{ color: 'var(--color-primary)', fontSize: 48, mb: 2 }}>✓</Typography>
+            <Typography variant="h6" sx={{ color: 'var(--color-text-primary)' }}>Queue is empty</Typography>
+            <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
               No articles are currently {filter === 'pending_manual_review' ? 'pending review' : 'under review'}.
             </Typography>
           </CardContent>
@@ -129,8 +129,8 @@ const ReviewQueue: React.FC = () => {
             <Grid item xs={12} sm={6} lg={4} key={article.id}>
               <Card
                 sx={{
-                  background: 'rgba(13, 27, 42, 0.9)',
-                  border: '1px solid rgba(0,120,215,0.2)',
+                  background: 'var(--color-card-bg)',
+                  border: '1px solid var(--color-border-primary)',
                   borderRadius: 2,
                   height: '100%',
                   display: 'flex',
@@ -168,7 +168,7 @@ const ReviewQueue: React.FC = () => {
                   <Typography
                     variant="subtitle1"
                     sx={{
-                      color: '#e8f4fd',
+                      color: 'var(--color-text-primary)',
                       fontWeight: 600,
                       mb: 1,
                       display: '-webkit-box',
@@ -184,7 +184,7 @@ const ReviewQueue: React.FC = () => {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: '#8da9c4',
+                        color: 'var(--color-text-secondary)',
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
                         WebkitBoxOrient: 'vertical',
@@ -198,8 +198,8 @@ const ReviewQueue: React.FC = () => {
                   )}
                   <Box sx={{ mt: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="caption" sx={{ color: '#8da9c4' }}>Trust Score</Typography>
-                      <Typography variant="caption" sx={{ color: '#8da9c4' }}>{article.trust_score}/100</Typography>
+                      <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>Trust Score</Typography>
+                      <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>{article.trust_score}/100</Typography>
                     </Box>
                     <LinearProgress
                       variant="determinate"
@@ -215,7 +215,7 @@ const ReviewQueue: React.FC = () => {
                       }}
                     />
                   </Box>
-                  <Typography variant="caption" sx={{ color: '#4a9ede', mt: 1, display: 'block' }}>
+                  <Typography variant="caption" sx={{ color: 'var(--color-primary)', mt: 1, display: 'block' }}>
                     {article.published_at
                       ? new Date(article.published_at).toLocaleDateString()
                       : `Collected: ${new Date(article.collected_at).toLocaleDateString()}`}
@@ -247,7 +247,7 @@ const ReviewQueue: React.FC = () => {
                     variant="outlined"
                     startIcon={<ViewIcon />}
                     onClick={() => navigate(`/review/${article.id}`)}
-                    sx={{ borderColor: 'rgba(0,120,215,0.4)', color: '#4a9ede' }}
+                    sx={{ borderColor: 'var(--color-border-primary)', color: 'var(--color-primary)' }}
                   >
                     Details
                   </Button>

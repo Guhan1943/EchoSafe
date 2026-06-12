@@ -58,7 +58,7 @@ def _seed_initial_data() -> None:
         if not existing_admin:
             admin_user = User(
                 email="admin@securitycopilot.dev",
-                hashed_password=get_password_hash("Admin123!"),
+                hashed_password=get_password_hash("admin123"),
                 full_name="System Admin",
                 role="admin",
                 is_active=True,

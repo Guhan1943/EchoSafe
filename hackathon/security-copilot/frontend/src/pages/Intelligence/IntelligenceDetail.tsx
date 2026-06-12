@@ -139,8 +139,8 @@ const IntelligenceDetail: React.FC = () => {
   if (isLoading) {
     return (
       <Box sx={{ p: 3 }}>
-        <Skeleton height={40} width={300} sx={{ bgcolor: 'rgba(255,255,255,0.1)', mb: 2 }} />
-        <Skeleton height={200} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+        <Skeleton height={40} width={300} sx={{ bgcolor: 'var(--color-bg-subtle)', mb: 2 }} />
+        <Skeleton height={200} sx={{ bgcolor: 'var(--color-bg-subtle)' }} />
       </Box>
     );
   }
@@ -165,15 +165,15 @@ const IntelligenceDetail: React.FC = () => {
         <Button
           startIcon={<BackIcon />}
           onClick={() => navigate(-1)}
-          sx={{ color: '#4a9ede', mb: 2 }}
+          sx={{ color: 'var(--color-primary)', mb: 2 }}
         >
           Back
         </Button>
-        <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+        <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
           <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 1 }}>
+                <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 1 }}>
                   {article.title}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -193,20 +193,20 @@ const IntelligenceDetail: React.FC = () => {
                     size="small"
                     color={statusColor[article.status] ?? 'default'}
                   />
-                  <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                     Trust Score: {article.trust_score}/100
                   </Typography>
                   {article.author && (
-                    <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                    <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                       By {article.author}
                     </Typography>
                   )}
                   {article.published_at && (
-                    <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                    <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                       {new Date(article.published_at).toLocaleDateString()}
                     </Typography>
                   )}
-                  <Link href={article.url} target="_blank" rel="noopener noreferrer" sx={{ color: '#4a9ede', fontSize: 12, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Link href={article.url} target="_blank" rel="noopener noreferrer" sx={{ color: 'var(--color-primary)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <OpenIcon fontSize="small" /> Source
                   </Link>
                 </Box>
@@ -219,7 +219,7 @@ const IntelligenceDetail: React.FC = () => {
                     startIcon={verifyMutation.isPending ? <CircularProgress size={16} /> : <VerifiedIcon />}
                     onClick={() => verifyMutation.mutate()}
                     disabled={verifyMutation.isPending}
-                    sx={{ borderColor: '#0078d4', color: '#0078d4' }}
+                    sx={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
                   >
                     Verify
                   </Button>
@@ -270,25 +270,25 @@ const IntelligenceDetail: React.FC = () => {
             size="small"
             sx={{
               '& .MuiOutlinedInput-root': {
-                color: '#e8f4fd',
+                color: 'var(--color-text-primary)',
                 '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' },
               },
-              '& .MuiInputLabel-root': { color: '#4a9ede' },
+              '& .MuiInputLabel-root': { color: 'var(--color-primary)' },
             }}
           />
         </Box>
       )}
 
       {/* Tabs */}
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
-        <Box sx={{ borderBottom: '1px solid rgba(0,120,215,0.2)' }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
+        <Box sx={{ borderBottom: '1px solid var(--color-border-primary)' }}>
           <Tabs
             value={tabValue}
             onChange={(_, v) => setTabValue(v)}
             sx={{
-              '& .MuiTab-root': { color: '#8da9c4', textTransform: 'none' },
-              '& .Mui-selected': { color: '#0078d4' },
-              '& .MuiTabs-indicator': { bgcolor: '#0078d4' },
+              '& .MuiTab-root': { color: 'var(--color-text-secondary)', textTransform: 'none' },
+              '& .Mui-selected': { color: 'var(--color-primary)' },
+              '& .MuiTabs-indicator': { bgcolor: 'var(--color-primary)' },
             }}
           >
             <Tab label="Overview" />
@@ -303,22 +303,22 @@ const IntelligenceDetail: React.FC = () => {
           <TabPanel value={tabValue} index={0}>
             {article.summary && (
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ color: '#4a9ede', fontWeight: 600, mb: 1 }}>
+                <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 600, mb: 1 }}>
                   Summary
                 </Typography>
-                <Typography sx={{ color: '#c8dff0', lineHeight: 1.7 }}>
+                <Typography sx={{ color: 'var(--color-text-primary)', lineHeight: 1.7 }}>
                   {article.summary}
                 </Typography>
               </Box>
             )}
             <Divider sx={{ borderColor: 'rgba(0,120,215,0.2)', my: 2 }} />
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle1" sx={{ color: '#4a9ede', fontWeight: 600, mb: 1 }}>
+              <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 600, mb: 1 }}>
                 Content Excerpt
               </Typography>
               <Typography
                 sx={{
-                  color: '#8da9c4',
+                  color: 'var(--color-text-secondary)',
                   lineHeight: 1.7,
                   maxHeight: 200,
                   overflow: 'hidden',
@@ -330,7 +330,7 @@ const IntelligenceDetail: React.FC = () => {
                     left: 0,
                     right: 0,
                     height: 40,
-                    background: 'linear-gradient(transparent, rgba(13,27,42,0.9))',
+                    background: 'linear-gradient(transparent, var(--color-card-bg))',
                   },
                 }}
               >
@@ -338,7 +338,7 @@ const IntelligenceDetail: React.FC = () => {
               </Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle2" sx={{ color: '#8da9c4', mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
                 Metadata
               </Typography>
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 1 }}>
@@ -349,8 +349,8 @@ const IntelligenceDetail: React.FC = () => {
                   { label: 'Status', value: article.status },
                 ].map(({ label, value }) => (
                   <Box key={label}>
-                    <Typography variant="caption" sx={{ color: '#4a9ede' }}>{label}</Typography>
-                    <Typography variant="body2" sx={{ color: '#c8dff0' }}>{String(value)}</Typography>
+                    <Typography variant="caption" sx={{ color: 'var(--color-primary)' }}>{label}</Typography>
+                    <Typography variant="body2" sx={{ color: 'var(--color-text-primary)' }}>{String(value)}</Typography>
                   </Box>
                 ))}
               </Box>
@@ -363,14 +363,14 @@ const IntelligenceDetail: React.FC = () => {
               <Box>
                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 2, mb: 3 }}>
                   {[
-                    { label: 'Authenticity Score', value: vr.authenticity_score, color: '#0078d4' },
+                    { label: 'Authenticity Score', value: vr.authenticity_score, color: 'var(--color-primary)' },
                     { label: 'Credibility Score', value: vr.credibility_score, color: '#388e3c' },
                     { label: 'Confidence', value: vr.confidence ?? 'N/A', color: '#7b1fa2' },
-                    { label: 'Severity', value: vr.severity ?? 'N/A', color: vr.severity ? severityColor[vr.severity] : '#8da9c4' },
+                    { label: 'Severity', value: vr.severity ?? 'N/A', color: vr.severity ? severityColor[vr.severity] : 'var(--color-text-secondary)' },
                   ].map(({ label, value, color }) => (
                     <Card key={label} sx={{ background: `${color}15`, border: `1px solid ${color}30` }}>
                       <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                        <Typography variant="caption" sx={{ color: '#8da9c4' }}>{label}</Typography>
+                        <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>{label}</Typography>
                         <Typography variant="h5" sx={{ color, fontWeight: 700 }}>
                           {typeof value === 'number' ? `${value}/100` : value}
                         </Typography>
@@ -382,21 +382,21 @@ const IntelligenceDetail: React.FC = () => {
                 {vr.business_impact && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" sx={{ color: '#f9a825', fontWeight: 600, mb: 1 }}>Business Impact</Typography>
-                    <Typography sx={{ color: '#c8dff0', lineHeight: 1.7 }}>{vr.business_impact}</Typography>
+                    <Typography sx={{ color: 'var(--color-text-primary)', lineHeight: 1.7 }}>{vr.business_impact}</Typography>
                   </Box>
                 )}
 
                 {vr.ai_analysis && (
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ color: '#4a9ede', fontWeight: 600, mb: 1 }}>AI Analysis</Typography>
-                    <Typography sx={{ color: '#c8dff0', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{vr.ai_analysis}</Typography>
+                    <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 600, mb: 1 }}>AI Analysis</Typography>
+                    <Typography sx={{ color: 'var(--color-text-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{vr.ai_analysis}</Typography>
                   </Box>
                 )}
 
                 {vr.recommended_actions && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" sx={{ color: '#388e3c', fontWeight: 600, mb: 1 }}>Recommended Actions</Typography>
-                    <Typography sx={{ color: '#c8dff0', lineHeight: 1.7 }}>{vr.recommended_actions}</Typography>
+                    <Typography sx={{ color: 'var(--color-text-primary)', lineHeight: 1.7 }}>{vr.recommended_actions}</Typography>
                   </Box>
                 )}
 
@@ -422,7 +422,7 @@ const IntelligenceDetail: React.FC = () => {
 
                 {vr.sources_checked && vr.sources_checked.length > 0 && (
                   <Box>
-                    <Typography variant="subtitle1" sx={{ color: '#4a9ede', fontWeight: 600, mb: 1 }}>Sources Checked</Typography>
+                    <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 600, mb: 1 }}>Sources Checked</Typography>
                     <List dense>
                       {vr.sources_checked.map((src, i) => (
                         <ListItem key={i} sx={{ py: 0 }}>
@@ -430,8 +430,8 @@ const IntelligenceDetail: React.FC = () => {
                             primary={src.name}
                             secondary={src.found ? 'Found' : 'Not found'}
                             sx={{
-                              '& .MuiListItemText-primary': { color: '#c8dff0', fontSize: 14 },
-                              '& .MuiListItemText-secondary': { color: src.found ? '#388e3c' : '#8da9c4' },
+                              '& .MuiListItemText-primary': { color: 'var(--color-text-primary)', fontSize: 14 },
+                              '& .MuiListItemText-secondary': { color: src.found ? '#388e3c' : 'var(--color-text-secondary)' },
                             }}
                           />
                         </ListItem>
@@ -453,7 +453,7 @@ const IntelligenceDetail: React.FC = () => {
                   <Typography variant="h2" sx={{ color: article.trust_score >= 70 ? '#388e3c' : article.trust_score >= 40 ? '#f9a825' : '#d32f2f', fontWeight: 700 }}>
                     {article.trust_score}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#8da9c4' }}>Overall Trust Score / 100</Typography>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>Overall Trust Score / 100</Typography>
                   <LinearProgress
                     variant="determinate"
                     value={article.trust_score}
@@ -461,7 +461,7 @@ const IntelligenceDetail: React.FC = () => {
                       mt: 1,
                       height: 10,
                       borderRadius: 5,
-                      bgcolor: 'rgba(255,255,255,0.1)',
+                      bgcolor: 'var(--color-bg-subtle)',
                       '& .MuiLinearProgress-bar': {
                         bgcolor: article.trust_score >= 70 ? '#388e3c' : article.trust_score >= 40 ? '#f9a825' : '#d32f2f',
                         borderRadius: 5,
@@ -472,15 +472,15 @@ const IntelligenceDetail: React.FC = () => {
 
                 {breakdownData.length > 0 && (
                   <Box>
-                    <Typography variant="subtitle1" sx={{ color: '#4a9ede', fontWeight: 600, mb: 2 }}>Score Breakdown</Typography>
+                    <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 600, mb: 2 }}>Score Breakdown</Typography>
                     <ResponsiveContainer width="100%" height={200}>
                       <BarChart data={breakdownData} margin={{ top: 5, right: 20, bottom: 40, left: 0 }}>
-                        <XAxis dataKey="name" tick={{ fill: '#8da9c4', fontSize: 11 }} angle={-30} textAnchor="end" />
-                        <YAxis tick={{ fill: '#8da9c4', fontSize: 11 }} domain={[0, 100]} />
+                        <XAxis dataKey="name" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} angle={-30} textAnchor="end" />
+                        <YAxis tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} domain={[0, 100]} />
                         <ReTooltip
                           contentStyle={{ background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)', borderRadius: 8 }}
-                          labelStyle={{ color: '#4a9ede' }}
-                          itemStyle={{ color: '#c8dff0' }}
+                          labelStyle={{ color: 'var(--color-primary)' }}
+                          itemStyle={{ color: 'var(--color-text-primary)' }}
                         />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                           {breakdownData.map((entry, index) => (
@@ -509,15 +509,15 @@ const IntelligenceDetail: React.FC = () => {
                     key={gc.id}
                     sx={{
                       background: 'rgba(0,120,215,0.05)',
-                      border: '1px solid rgba(0,120,215,0.2)',
+                      border: '1px solid var(--color-border-primary)',
                       borderRadius: '8px !important',
                       mb: 1,
                       '&:before': { display: 'none' },
                     }}
                   >
-                    <AccordionSummary expandIcon={<ExpandIcon sx={{ color: '#4a9ede' }} />}>
+                    <AccordionSummary expandIcon={<ExpandIcon sx={{ color: 'var(--color-primary)' }} />}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography sx={{ color: '#e8f4fd', fontWeight: 600 }}>
+                        <Typography sx={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>
                           {gc.content_type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                         </Typography>
                         <Chip
@@ -526,20 +526,20 @@ const IntelligenceDetail: React.FC = () => {
                           color={gc.is_approved ? 'success' : 'default'}
                           sx={{ fontSize: 11, height: 20 }}
                         />
-                        <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                        <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                           {new Date(gc.updated_at).toLocaleDateString()}
                         </Typography>
                       </Box>
                     </AccordionSummary>
                     <AccordionDetails>
                       {gc.title && (
-                        <Typography variant="subtitle2" sx={{ color: '#4a9ede', mb: 1 }}>
+                        <Typography variant="subtitle2" sx={{ color: 'var(--color-primary)', mb: 1 }}>
                           {gc.title}
                         </Typography>
                       )}
                       <Typography
                         sx={{
-                          color: '#c8dff0',
+                          color: 'var(--color-text-primary)',
                           lineHeight: 1.7,
                           whiteSpace: 'pre-wrap',
                           fontSize: 14,
@@ -555,7 +555,7 @@ const IntelligenceDetail: React.FC = () => {
               </Box>
             ) : (
               <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography sx={{ color: '#8da9c4', mb: 2 }}>
+                <Typography sx={{ color: 'var(--color-text-secondary)', mb: 2 }}>
                   No generated content yet.
                 </Typography>
                 {canActOnArticle && (

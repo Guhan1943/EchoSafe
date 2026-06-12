@@ -43,56 +43,23 @@ const Login: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0a0e1a 0%, #0d1b2a 50%, #0a1628 100%)',
+        bgcolor: 'var(--color-bg-default)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: '-50%',
-          left: '-50%',
-          width: '200%',
-          height: '200%',
-          background:
-            'radial-gradient(ellipse at center, rgba(0, 120, 215, 0.08) 0%, transparent 60%)',
-          animation: 'pulse 8s ease-in-out infinite',
-        },
-        '@keyframes pulse': {
-          '0%, 100%': { opacity: 0.5 },
-          '50%': { opacity: 1 },
-        },
+        p: 2,
       }}
     >
-      {/* Background grid lines */}
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage:
-            'linear-gradient(rgba(0,120,215,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,120,215,0.05) 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-        }}
-      />
-
       <Card
         sx={{
           width: '100%',
           maxWidth: 420,
-          mx: 2,
-          background: 'rgba(13, 27, 42, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 120, 215, 0.3)',
+          border: '1px solid var(--color-border-primary)',
           borderRadius: 3,
-          boxShadow: '0 0 40px rgba(0, 120, 215, 0.15), 0 20px 60px rgba(0,0,0,0.5)',
-          position: 'relative',
-          zIndex: 1,
+          boxShadow: '0 4px 24px var(--color-shadow)',
         }}
       >
         <CardContent sx={{ p: 4 }}>
-          {/* Logo / Header */}
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Box
               sx={{
@@ -102,57 +69,32 @@ const Login: React.FC = () => {
                 width: 72,
                 height: 72,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #0078d4 0%, #004e8c 100%)',
-                boxShadow: '0 0 20px rgba(0, 120, 212, 0.5)',
+                bgcolor: 'var(--color-primary)',
                 mb: 2,
               }}
             >
-              <ShieldIcon sx={{ fontSize: 40, color: '#fff' }} />
+              <ShieldIcon sx={{ fontSize: 40, color: 'var(--color-primary-contrast)' }} />
             </Box>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 700,
-                color: '#e8f4fd',
-                letterSpacing: '-0.5px',
-              }}
-            >
+            <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>
               Security Intelligence
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 400,
-                color: '#0078d4',
-                letterSpacing: '0.5px',
-              }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 400, color: 'var(--color-primary)' }}>
               Copilot
             </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 0.5,
-                mt: 1,
-              }}
-            >
-              <SecurityIcon sx={{ fontSize: 14, color: '#4a9ede' }} />
-              <Typography variant="caption" sx={{ color: '#4a9ede', letterSpacing: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mt: 1 }}>
+              <SecurityIcon sx={{ fontSize: 14, color: 'var(--color-primary)' }} />
+              <Typography variant="caption" sx={{ color: 'var(--color-primary)', letterSpacing: 1 }}>
                 THREAT INTELLIGENCE PLATFORM
               </Typography>
             </Box>
           </Box>
 
-          {/* Error Alert */}
           {error && (
-            <Alert severity="error" sx={{ mb: 2, bgcolor: 'rgba(211,47,47,0.15)', color: '#f44336' }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
-          {/* Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
               label="Email Address"
@@ -163,17 +105,7 @@ const Login: React.FC = () => {
               required
               autoComplete="email"
               autoFocus
-              sx={{
-                mb: 2,
-                '& .MuiOutlinedInput-root': {
-                  color: '#e8f4fd',
-                  '& fieldset': { borderColor: 'rgba(0, 120, 215, 0.3)' },
-                  '&:hover fieldset': { borderColor: 'rgba(0, 120, 215, 0.6)' },
-                  '&.Mui-focused fieldset': { borderColor: '#0078d4' },
-                },
-                '& .MuiInputLabel-root': { color: '#4a9ede' },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#0078d4' },
-              }}
+              sx={{ mb: 2 }}
             />
             <TextField
               label="Password"
@@ -189,53 +121,26 @@ const Login: React.FC = () => {
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
-                      sx={{ color: '#4a9ede' }}
+                      sx={{ color: 'var(--color-primary)' }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                mb: 3,
-                '& .MuiOutlinedInput-root': {
-                  color: '#e8f4fd',
-                  '& fieldset': { borderColor: 'rgba(0, 120, 215, 0.3)' },
-                  '&:hover fieldset': { borderColor: 'rgba(0, 120, 215, 0.6)' },
-                  '&.Mui-focused fieldset': { borderColor: '#0078d4' },
-                },
-                '& .MuiInputLabel-root': { color: '#4a9ede' },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#0078d4' },
-              }}
+              sx={{ mb: 3 }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              color="primary"
               disabled={isLoading || !email || !password}
-              sx={{
-                py: 1.5,
-                background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
-                color: '#fff',
-                fontWeight: 600,
-                fontSize: '1rem',
-                letterSpacing: '0.5px',
-                textTransform: 'none',
-                borderRadius: 2,
-                boxShadow: '0 4px 15px rgba(0, 120, 212, 0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #106ebe 0%, #004e8c 100%)',
-                  boxShadow: '0 4px 20px rgba(0, 120, 212, 0.5)',
-                },
-                '&:disabled': {
-                  background: 'rgba(0, 120, 212, 0.3)',
-                  color: 'rgba(255,255,255,0.5)',
-                },
-              }}
+              sx={{ py: 1.5, fontWeight: 600, fontSize: '1rem', textTransform: 'none', borderRadius: 2 }}
             >
               {isLoading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <CircularProgress size={18} sx={{ color: '#fff' }} />
+                  <CircularProgress size={18} sx={{ color: 'var(--color-primary-contrast)' }} />
                   <span>Authenticating...</span>
                 </Box>
               ) : (
@@ -246,12 +151,7 @@ const Login: React.FC = () => {
 
           <Typography
             variant="caption"
-            sx={{
-              display: 'block',
-              textAlign: 'center',
-              mt: 3,
-              color: 'rgba(74, 158, 222, 0.6)',
-            }}
+            sx={{ display: 'block', textAlign: 'center', mt: 3, color: 'var(--color-text-secondary)' }}
           >
             Secure access — all actions are audited
           </Typography>

@@ -90,7 +90,7 @@ const ThreatFeed: React.FC = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <ThreatIcon sx={{ color: '#f57c00', fontSize: 28 }} />
-          <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700 }}>
+          <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
             Threat Intelligence Feed
           </Typography>
         </Box>
@@ -99,7 +99,7 @@ const ThreatFeed: React.FC = () => {
             variant="outlined"
             startIcon={<RefreshIcon />}
             onClick={() => refetch()}
-            sx={{ borderColor: 'rgba(0,120,215,0.4)', color: '#4a9ede' }}
+            sx={{ borderColor: 'var(--color-border-primary)', color: 'var(--color-primary)' }}
           >
             Refresh
           </Button>
@@ -118,7 +118,7 @@ const ThreatFeed: React.FC = () => {
       </Box>
 
       {/* Filters */}
-      <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
         <CardContent sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <Box component="form" onSubmit={handleSearch} sx={{ display: 'flex', gap: 1 }}>
             <TextField
@@ -127,17 +127,17 @@ const ThreatFeed: React.FC = () => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               InputProps={{
-                startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#8da9c4', fontSize: 18 }} /></InputAdornment>,
-                sx: { color: '#e8f4fd' },
+                startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'var(--color-text-secondary)', fontSize: 18 }} /></InputAdornment>,
+                sx: { color: 'var(--color-text-primary)' },
               }}
               sx={{ minWidth: 220 }}
             />
-            <Button type="submit" variant="outlined" size="small" sx={{ color: '#4a9ede', borderColor: 'rgba(0,120,215,0.4)' }}>Search</Button>
+            <Button type="submit" variant="outlined" size="small" sx={{ color: 'var(--color-primary)', borderColor: 'var(--color-border-primary)' }}>Search</Button>
           </Box>
 
           <FormControl size="small" sx={{ minWidth: 130 }}>
-            <InputLabel sx={{ color: '#4a9ede' }}>Severity</InputLabel>
-            <Select value={severityFilter} label="Severity" onChange={(e) => { setSeverityFilter(e.target.value); setPage(0); }} sx={{ color: '#e8f4fd' }}>
+            <InputLabel sx={{ color: 'var(--color-primary)' }}>Severity</InputLabel>
+            <Select value={severityFilter} label="Severity" onChange={(e) => { setSeverityFilter(e.target.value); setPage(0); }} sx={{ color: 'var(--color-text-primary)' }}>
               <MenuItem value="">All</MenuItem>
               {['critical', 'high', 'medium', 'low'].map((s) => (
                 <MenuItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</MenuItem>
@@ -146,16 +146,16 @@ const ThreatFeed: React.FC = () => {
           </FormControl>
 
           <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel sx={{ color: '#4a9ede' }}>Source</InputLabel>
-            <Select value={sourceFilter} label="Source" onChange={(e) => { setSourceFilter(e.target.value); setPage(0); }} sx={{ color: '#e8f4fd' }}>
+            <InputLabel sx={{ color: 'var(--color-primary)' }}>Source</InputLabel>
+            <Select value={sourceFilter} label="Source" onChange={(e) => { setSourceFilter(e.target.value); setPage(0); }} sx={{ color: 'var(--color-text-primary)' }}>
               <MenuItem value="">All</MenuItem>
               {Object.entries(SOURCE_LABELS).map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
             </Select>
           </FormControl>
 
           <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel sx={{ color: '#4a9ede' }}>Confidence</InputLabel>
-            <Select value={confidenceFilter} label="Confidence" onChange={(e) => { setConfidenceFilter(e.target.value); setPage(0); }} sx={{ color: '#e8f4fd' }}>
+            <InputLabel sx={{ color: 'var(--color-primary)' }}>Confidence</InputLabel>
+            <Select value={confidenceFilter} label="Confidence" onChange={(e) => { setConfidenceFilter(e.target.value); setPage(0); }} sx={{ color: 'var(--color-text-primary)' }}>
               <MenuItem value="">All</MenuItem>
               {['verified', 'high', 'medium', 'low'].map((l) => <MenuItem key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</MenuItem>)}
             </Select>
@@ -165,14 +165,14 @@ const ThreatFeed: React.FC = () => {
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>Failed to load threat feed.</Alert>}
 
-      <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
         <CardContent sx={{ p: 0 }}>
           <Box sx={{ overflowX: 'auto' }}>
             <Table size="small">
               <TableHead>
                 <TableRow>
                   {['Title', 'Source', 'Severity', 'Risk', 'Confidence', 'CVEs', 'Collected'].map((h) => (
-                    <TableCell key={h} sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12, px: 2, py: 1.5 }}>{h}</TableCell>
+                    <TableCell key={h} sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12, px: 2, py: 1.5 }}>{h}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -196,7 +196,7 @@ const ThreatFeed: React.FC = () => {
                           onClick={() => navigate(`/threats/${threat.id}`)}
                           sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'rgba(0,120,215,0.05)' }, '& td': { borderBottom: '1px solid rgba(0,120,215,0.06)' } }}
                         >
-                          <TableCell sx={{ color: '#c8dff0', maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', px: 2 }}>
+                          <TableCell sx={{ color: 'var(--color-text-primary)', maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', px: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               {(threat.risk_score >= 75) && <HighRiskIcon sx={{ color: '#d32f2f', fontSize: 14 }} />}
                               {threat.title}
@@ -208,21 +208,21 @@ const ThreatFeed: React.FC = () => {
                           <TableCell sx={{ px: 2 }}>
                             {threat.severity ? (
                               <Chip label={threat.severity} size="small" sx={{ bgcolor: `${SEVERITY_COLORS[threat.severity] ?? '#607d8b'}20`, color: SEVERITY_COLORS[threat.severity] ?? '#607d8b', fontSize: 11, height: 20 }} />
-                            ) : <Typography variant="caption" sx={{ color: '#8da9c4' }}>—</Typography>}
+                            ) : <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>—</Typography>}
                           </TableCell>
                           <TableCell sx={{ px: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <LinearProgress variant="determinate" value={threat.risk_score} sx={{ width: 48, height: 4, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: threat.risk_score >= 75 ? '#d32f2f' : threat.risk_score >= 50 ? '#f57c00' : '#f9a825' } }} />
-                              <Typography variant="caption" sx={{ color: '#8da9c4' }}>{threat.risk_score}</Typography>
+                              <LinearProgress variant="determinate" value={threat.risk_score} sx={{ width: 48, height: 4, borderRadius: 2, bgcolor: 'var(--color-bg-subtle)', '& .MuiLinearProgress-bar': { bgcolor: threat.risk_score >= 75 ? '#d32f2f' : threat.risk_score >= 50 ? '#f57c00' : '#f9a825' } }} />
+                              <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>{threat.risk_score}</Typography>
                             </Box>
                           </TableCell>
                           <TableCell sx={{ px: 2 }}>
                             <Chip label={threat.confidence_level} size="small" color={CONFIDENCE_COLORS[threat.confidence_level] ?? 'default'} sx={{ fontSize: 11, height: 20 }} />
                           </TableCell>
-                          <TableCell sx={{ color: '#4a9ede', fontSize: 12, px: 2 }}>
+                          <TableCell sx={{ color: 'var(--color-primary)', fontSize: 12, px: 2 }}>
                             —
                           </TableCell>
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 11, px: 2, whiteSpace: 'nowrap' }}>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 11, px: 2, whiteSpace: 'nowrap' }}>
                             {new Date(threat.collected_at).toLocaleDateString()}
                           </TableCell>
                         </TableRow>
@@ -239,7 +239,7 @@ const ThreatFeed: React.FC = () => {
             onPageChange={(_, p) => setPage(p)}
             rowsPerPage={rowsPerPage}
             rowsPerPageOptions={[20]}
-            sx={{ color: '#8da9c4', borderTop: '1px solid rgba(0,120,215,0.2)' }}
+            sx={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-border-primary)' }}
           />
         </CardContent>
       </Card>

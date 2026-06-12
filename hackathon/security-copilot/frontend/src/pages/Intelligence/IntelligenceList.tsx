@@ -114,12 +114,12 @@ const IntelligenceList: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700 }}>
+        <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
           Intelligence Feed
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Refresh">
-            <IconButton onClick={() => refetch()} sx={{ color: '#4a9ede' }}>
+            <IconButton onClick={() => refetch()} sx={{ color: 'var(--color-primary)' }}>
               <RefreshIcon />
             </IconButton>
           </Tooltip>
@@ -129,7 +129,7 @@ const IntelligenceList: React.FC = () => {
               startIcon={<DownloadIcon />}
               onClick={() => collectAllMutation.mutate()}
               disabled={collectAllMutation.isPending}
-              sx={{ borderColor: 'rgba(0,120,215,0.4)', color: '#4a9ede' }}
+              sx={{ borderColor: 'var(--color-border-primary)', color: 'var(--color-primary)' }}
             >
               Collect All
             </Button>
@@ -138,7 +138,7 @@ const IntelligenceList: React.FC = () => {
       </Box>
 
       {/* Filter Bar */}
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
         <CardContent>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
             <Box component="form" onSubmit={handleSearchSubmit} sx={{ flex: '1 1 200px' }}>
@@ -151,28 +151,28 @@ const IntelligenceList: React.FC = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#4a9ede', fontSize: 18 }} />
+                      <SearchIcon sx={{ color: 'var(--color-primary)', fontSize: 18 }} />
                     </InputAdornment>
                   ),
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    color: '#e8f4fd',
+                    color: 'var(--color-text-primary)',
                     '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' },
                     '&:hover fieldset': { borderColor: 'rgba(0,120,215,0.6)' },
-                    '&.Mui-focused fieldset': { borderColor: '#0078d4' },
+                    '&.Mui-focused fieldset': { borderColor: 'var(--color-primary)' },
                   },
                 }}
               />
             </Box>
 
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel sx={{ color: '#4a9ede' }}>Status</InputLabel>
+              <InputLabel sx={{ color: 'var(--color-primary)' }}>Status</InputLabel>
               <Select
                 value={filters.status ?? ''}
                 label="Status"
                 onChange={(e) => handleFilterChange('status', e.target.value as ArticleStatus)}
-                sx={{ color: '#e8f4fd', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
+                sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
               >
                 <MenuItem value="">All Statuses</MenuItem>
                 {Object.values(ArticleStatus).map((s) => (
@@ -182,12 +182,12 @@ const IntelligenceList: React.FC = () => {
             </FormControl>
 
             <FormControl size="small" sx={{ minWidth: 130 }}>
-              <InputLabel sx={{ color: '#4a9ede' }}>Severity</InputLabel>
+              <InputLabel sx={{ color: 'var(--color-primary)' }}>Severity</InputLabel>
               <Select
                 value={filters.severity ?? ''}
                 label="Severity"
                 onChange={(e) => handleFilterChange('severity', e.target.value as ArticleSeverity)}
-                sx={{ color: '#e8f4fd', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
+                sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
               >
                 <MenuItem value="">All Severities</MenuItem>
                 {Object.values(ArticleSeverity).map((s) => (
@@ -197,12 +197,12 @@ const IntelligenceList: React.FC = () => {
             </FormControl>
 
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel sx={{ color: '#4a9ede' }}>Source</InputLabel>
+              <InputLabel sx={{ color: 'var(--color-primary)' }}>Source</InputLabel>
               <Select
                 value={filters.source_id ?? ''}
                 label="Source"
                 onChange={(e) => handleFilterChange('source_id', e.target.value as number)}
-                sx={{ color: '#e8f4fd', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
+                sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
               >
                 <MenuItem value="">All Sources</MenuItem>
                 {sources?.map((s) => (
@@ -214,7 +214,7 @@ const IntelligenceList: React.FC = () => {
             <Button
               size="small"
               onClick={() => { setFilters({}); setSearchText(''); setPage(0); }}
-              sx={{ color: '#8da9c4' }}
+              sx={{ color: 'var(--color-text-secondary)' }}
             >
               Clear
             </Button>
@@ -223,7 +223,7 @@ const IntelligenceList: React.FC = () => {
       </Card>
 
       {/* Table */}
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
         <Box sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>
@@ -231,7 +231,7 @@ const IntelligenceList: React.FC = () => {
                 {['Title', 'Source', 'Severity', 'Status', 'Trust Score', 'Date', 'Actions'].map((h) => (
                   <TableCell
                     key={h}
-                    sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12, fontWeight: 600 }}
+                    sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12, fontWeight: 600 }}
                   >
                     {h}
                   </TableCell>
@@ -262,7 +262,7 @@ const IntelligenceList: React.FC = () => {
                     >
                       <TableCell
                         sx={{
-                          color: '#c8dff0',
+                          color: 'var(--color-text-primary)',
                           maxWidth: 280,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -271,7 +271,7 @@ const IntelligenceList: React.FC = () => {
                       >
                         {article.title}
                       </TableCell>
-                      <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                      <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                         {sources?.find((s) => s.id === article.source_id)?.name ?? `#${article.source_id}`}
                       </TableCell>
                       <TableCell>
@@ -288,7 +288,7 @@ const IntelligenceList: React.FC = () => {
                             }}
                           />
                         ) : (
-                          <Typography variant="caption" sx={{ color: '#8da9c4' }}>—</Typography>
+                          <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>—</Typography>
                         )}
                       </TableCell>
                       <TableCell>
@@ -306,7 +306,7 @@ const IntelligenceList: React.FC = () => {
                               width: 40,
                               height: 4,
                               borderRadius: 2,
-                              bgcolor: 'rgba(255,255,255,0.1)',
+                              bgcolor: 'var(--color-bg-subtle)',
                               overflow: 'hidden',
                             }}
                           >
@@ -324,12 +324,12 @@ const IntelligenceList: React.FC = () => {
                               }}
                             />
                           </Box>
-                          <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                          <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                             {article.trust_score}
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                      <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                         {article.published_at
                           ? new Date(article.published_at).toLocaleDateString()
                           : new Date(article.collected_at).toLocaleDateString()}
@@ -342,7 +342,7 @@ const IntelligenceList: React.FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             component="a"
-                            sx={{ color: '#4a9ede' }}
+                            sx={{ color: 'var(--color-primary)' }}
                           >
                             <OpenIcon fontSize="small" />
                           </IconButton>
@@ -361,7 +361,7 @@ const IntelligenceList: React.FC = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
           rowsPerPageOptions={[10, 20, 50]}
-          sx={{ color: '#8da9c4', borderTop: '1px solid rgba(0,120,215,0.2)' }}
+          sx={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-border-primary)' }}
         />
       </Card>
     </Box>

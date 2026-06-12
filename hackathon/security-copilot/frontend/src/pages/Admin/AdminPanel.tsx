@@ -166,19 +166,19 @@ const AdminPanel: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 3 }}>
+      <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 3 }}>
         Administration
       </Typography>
 
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
-        <Box sx={{ borderBottom: '1px solid rgba(0,120,215,0.2)' }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
+        <Box sx={{ borderBottom: '1px solid var(--color-border-primary)' }}>
           <Tabs
             value={tab}
             onChange={(_, value) => setTab(value)}
             sx={{
-              '& .MuiTab-root': { color: '#8da9c4', textTransform: 'none' },
-              '& .Mui-selected': { color: '#0078d4' },
-              '& .MuiTabs-indicator': { bgcolor: '#0078d4' },
+              '& .MuiTab-root': { color: 'var(--color-text-secondary)', textTransform: 'none' },
+              '& .Mui-selected': { color: 'var(--color-primary)' },
+              '& .MuiTabs-indicator': { bgcolor: 'var(--color-primary)' },
             }}
           >
             <Tab label="Users" />
@@ -193,7 +193,7 @@ const AdminPanel: React.FC = () => {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={() => setAddOpen(true)}
-                sx={{ bgcolor: '#0078d4', '&:hover': { bgcolor: '#006cc1' } }}
+                sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: '#006cc1' } }}
               >
                 Add User
               </Button>
@@ -208,7 +208,7 @@ const AdminPanel: React.FC = () => {
                     {['Name', 'Email', 'Role', 'Status', 'Actions'].map((header) => (
                       <TableCell
                         key={header}
-                        sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12 }}
+                        sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12 }}
                       >
                         {header}
                       </TableCell>
@@ -228,8 +228,8 @@ const AdminPanel: React.FC = () => {
                       ))
                     : users?.map((user) => (
                         <TableRow key={user.id} sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' } }}>
-                          <TableCell sx={{ color: '#c8dff0' }}>{user.full_name || '—'}</TableCell>
-                          <TableCell sx={{ color: '#4a9ede' }}>{user.email}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-text-primary)' }}>{user.full_name || '—'}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-primary)' }}>{user.email}</TableCell>
                           <TableCell>
                             <Chip label={user.role} size="small" color={roleColor[user.role]} sx={{ fontSize: 11, height: 20 }} />
                           </TableCell>
@@ -243,7 +243,7 @@ const AdminPanel: React.FC = () => {
                           </TableCell>
                           <TableCell>
                             <Tooltip title="Edit">
-                              <IconButton size="small" onClick={() => openEdit(user)} sx={{ color: '#4a9ede' }}>
+                              <IconButton size="small" onClick={() => openEdit(user)} sx={{ color: 'var(--color-primary)' }}>
                                 <EditIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
@@ -290,9 +290,9 @@ const AdminPanel: React.FC = () => {
                     fullWidth
                     type={setting.key.includes('api_key') ? 'password' : 'text'}
                     sx={{
-                      '& .MuiOutlinedInput-root': { color: '#e8f4fd', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } },
-                      '& .MuiInputLabel-root': { color: '#4a9ede' },
-                      '& .MuiFormHelperText-root': { color: '#8da9c4' },
+                      '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } },
+                      '& .MuiInputLabel-root': { color: 'var(--color-primary)' },
+                      '& .MuiFormHelperText-root': { color: 'var(--color-text-secondary)' },
                     }}
                   />
                 ))}
@@ -301,7 +301,7 @@ const AdminPanel: React.FC = () => {
                     variant="contained"
                     disabled={Object.keys(settingEdits).length === 0 || settingsMutation.isPending}
                     onClick={() => settingsMutation.mutate(settingEdits)}
-                    sx={{ bgcolor: '#0078d4', '&:hover': { bgcolor: '#006cc1' } }}
+                    sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: '#006cc1' } }}
                   >
                     Save Settings
                   </Button>
@@ -319,18 +319,18 @@ const AdminPanel: React.FC = () => {
         fullWidth
         PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd' }}>Create User</DialogTitle>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Create User</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           <TextField label="Email" type="email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} fullWidth />
           <TextField label="Full Name" value={userForm.full_name} onChange={(e) => setUserForm({ ...userForm, full_name: e.target.value })} fullWidth />
           <TextField label="Password" type="password" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} fullWidth />
           <FormControl fullWidth>
-            <InputLabel sx={{ color: '#4a9ede' }}>Role</InputLabel>
+            <InputLabel sx={{ color: 'var(--color-primary)' }}>Role</InputLabel>
             <Select
               value={userForm.role}
               label="Role"
               onChange={(e) => setUserForm({ ...userForm, role: e.target.value as UserCreate['role'] })}
-              sx={{ color: '#e8f4fd' }}
+              sx={{ color: 'var(--color-text-primary)' }}
             >
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="analyst">Analyst</MenuItem>
@@ -339,7 +339,7 @@ const AdminPanel: React.FC = () => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setAddOpen(false)} sx={{ color: '#8da9c4' }}>Cancel</Button>
+          <Button onClick={() => setAddOpen(false)} sx={{ color: 'var(--color-text-secondary)' }}>Cancel</Button>
           <Button variant="contained" onClick={() => createMutation.mutate(userForm)} disabled={createMutation.isPending}>
             Create
           </Button>
@@ -353,17 +353,17 @@ const AdminPanel: React.FC = () => {
         fullWidth
         PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd' }}>Edit User</DialogTitle>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Edit User</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           <TextField label="Email" value={editForm.email ?? ''} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} fullWidth />
           <TextField label="Full Name" value={editForm.full_name ?? ''} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} fullWidth />
           <FormControl fullWidth>
-            <InputLabel sx={{ color: '#4a9ede' }}>Role</InputLabel>
+            <InputLabel sx={{ color: 'var(--color-primary)' }}>Role</InputLabel>
             <Select
               value={editForm.role ?? 'viewer'}
               label="Role"
               onChange={(e) => setEditForm({ ...editForm, role: e.target.value as UserUpdate['role'] })}
-              sx={{ color: '#e8f4fd' }}
+              sx={{ color: 'var(--color-text-primary)' }}
             >
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="analyst">Analyst</MenuItem>
@@ -378,11 +378,11 @@ const AdminPanel: React.FC = () => {
               />
             }
             label="Active"
-            sx={{ color: '#c8dff0' }}
+            sx={{ color: 'var(--color-text-primary)' }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditUser(null)} sx={{ color: '#8da9c4' }}>Cancel</Button>
+          <Button onClick={() => setEditUser(null)} sx={{ color: 'var(--color-text-secondary)' }}>Cancel</Button>
           <Button
             variant="contained"
             onClick={() => editUser && updateMutation.mutate({ id: editUser.id, data: editForm })}
@@ -398,14 +398,14 @@ const AdminPanel: React.FC = () => {
         onClose={() => setDeleteUser(null)}
         PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd' }}>Delete User</DialogTitle>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Delete User</DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#c8dff0' }}>
+          <Typography sx={{ color: 'var(--color-text-primary)' }}>
             Delete {deleteUser?.email}? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteUser(null)} sx={{ color: '#8da9c4' }}>Cancel</Button>
+          <Button onClick={() => setDeleteUser(null)} sx={{ color: 'var(--color-text-secondary)' }}>Cancel</Button>
           <Button
             variant="contained"
             color="error"

@@ -153,7 +153,7 @@ const SourceManagement: React.FC = () => {
         fullWidth
         required
         size="small"
-        sx={{ '& .MuiOutlinedInput-root': { color: '#e8f4fd', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } }, '& .MuiInputLabel-root': { color: '#4a9ede' } }}
+        sx={{ '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } }, '& .MuiInputLabel-root': { color: 'var(--color-primary)' } }}
       />
       <TextField
         label="URL"
@@ -162,15 +162,15 @@ const SourceManagement: React.FC = () => {
         fullWidth
         required
         size="small"
-        sx={{ '& .MuiOutlinedInput-root': { color: '#e8f4fd', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } }, '& .MuiInputLabel-root': { color: '#4a9ede' } }}
+        sx={{ '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } }, '& .MuiInputLabel-root': { color: 'var(--color-primary)' } }}
       />
       <FormControl size="small" fullWidth>
-        <InputLabel sx={{ color: '#4a9ede' }}>Source Type</InputLabel>
+        <InputLabel sx={{ color: 'var(--color-primary)' }}>Source Type</InputLabel>
         <Select
           value={formData.source_type}
           label="Source Type"
           onChange={(e) => handleFormChange('source_type', e.target.value as SourceType)}
-          sx={{ color: '#e8f4fd', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
+          sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
         >
           {sourceTypeOptions.map(({ value, label }) => (
             <MenuItem key={value} value={value}>{label}</MenuItem>
@@ -185,7 +185,7 @@ const SourceManagement: React.FC = () => {
         fullWidth
         size="small"
         inputProps={{ min: 5, max: 1440 }}
-        sx={{ '& .MuiOutlinedInput-root': { color: '#e8f4fd', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } }, '& .MuiInputLabel-root': { color: '#4a9ede' } }}
+        sx={{ '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } }, '& .MuiInputLabel-root': { color: 'var(--color-primary)' } }}
       />
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Switch
@@ -193,7 +193,7 @@ const SourceManagement: React.FC = () => {
           onChange={(e) => handleFormChange('is_active', e.target.checked)}
           sx={{ '& .Mui-checked': { color: '#388e3c' } }}
         />
-        <Typography sx={{ color: '#c8dff0', fontSize: 14 }}>Active</Typography>
+        <Typography sx={{ color: 'var(--color-text-primary)', fontSize: 14 }}>Active</Typography>
       </Box>
     </Box>
   );
@@ -209,7 +209,7 @@ const SourceManagement: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700 }}>
+        <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
           Source Management
         </Typography>
         {isAdmin && (
@@ -217,14 +217,14 @@ const SourceManagement: React.FC = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => { setFormData(defaultForm); setAddOpen(true); }}
-            sx={{ bgcolor: '#0078d4', '&:hover': { bgcolor: '#006cc1' } }}
+            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: '#006cc1' } }}
           >
             Add Source
           </Button>
         )}
       </Box>
 
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
         <Box sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>
@@ -232,7 +232,7 @@ const SourceManagement: React.FC = () => {
                 {['Name', 'URL', 'Type', 'Status', 'Interval', 'Last Polled', 'Actions'].map((h) => (
                   <TableCell
                     key={h}
-                    sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12, fontWeight: 600 }}
+                    sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12, fontWeight: 600 }}
                   >
                     {h}
                   </TableCell>
@@ -255,10 +255,10 @@ const SourceManagement: React.FC = () => {
                       key={source.id}
                       sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' } }}
                     >
-                      <TableCell sx={{ color: '#e8f4fd', fontWeight: 500 }}>{source.name}</TableCell>
+                      <TableCell sx={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{source.name}</TableCell>
                       <TableCell
                         sx={{
-                          color: '#4a9ede',
+                          color: 'var(--color-primary)',
                           maxWidth: 200,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -274,7 +274,7 @@ const SourceManagement: React.FC = () => {
                         <Chip
                           label={source.source_type.replace(/_/g, ' ')}
                           size="small"
-                          sx={{ bgcolor: 'rgba(0,120,215,0.15)', color: '#4a9ede', fontSize: 11, height: 20 }}
+                          sx={{ bgcolor: 'var(--color-border-primary)', color: 'var(--color-primary)', fontSize: 11, height: 20 }}
                         />
                       </TableCell>
                       <TableCell>
@@ -291,8 +291,8 @@ const SourceManagement: React.FC = () => {
                           <InactiveIcon sx={{ color: '#d32f2f', fontSize: 20 }} />
                         )}
                       </TableCell>
-                      <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>{source.polling_interval_minutes}m</TableCell>
-                      <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                      <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>{source.polling_interval_minutes}m</TableCell>
+                      <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                         {source.last_polled_at
                           ? new Date(source.last_polled_at).toLocaleString()
                           : 'Never'}
@@ -304,7 +304,7 @@ const SourceManagement: React.FC = () => {
                               size="small"
                               onClick={() => collectMutation.mutate(source.id)}
                               disabled={collectMutation.isPending}
-                              sx={{ color: '#0078d4' }}
+                              sx={{ color: 'var(--color-primary)' }}
                             >
                               <CollectIcon fontSize="small" />
                             </IconButton>
@@ -340,19 +340,19 @@ const SourceManagement: React.FC = () => {
         fullWidth
         PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd', borderBottom: '1px solid rgba(0,120,215,0.2)' }}>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border-primary)' }}>
           {editSource ? 'Edit Source' : 'Add Source'}
         </DialogTitle>
         <DialogContent sx={{ pt: 2 }}>{formFields}</DialogContent>
-        <DialogActions sx={{ borderTop: '1px solid rgba(0,120,215,0.2)', px: 3, py: 2 }}>
-          <Button onClick={() => { setAddOpen(false); setEditSource(null); }} sx={{ color: '#8da9c4' }}>
+        <DialogActions sx={{ borderTop: '1px solid var(--color-border-primary)', px: 3, py: 2 }}>
+          <Button onClick={() => { setAddOpen(false); setEditSource(null); }} sx={{ color: 'var(--color-text-secondary)' }}>
             Cancel
           </Button>
           <Button
             variant="contained"
             onClick={handleSubmit}
             disabled={createMutation.isPending || updateMutation.isPending || !formData.name || !formData.url}
-            sx={{ bgcolor: '#0078d4', '&:hover': { bgcolor: '#006cc1' } }}
+            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: '#006cc1' } }}
           >
             {editSource ? 'Save Changes' : 'Add Source'}
           </Button>
@@ -365,14 +365,14 @@ const SourceManagement: React.FC = () => {
         onClose={() => setDeleteSource(null)}
         PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd' }}>Delete Source</DialogTitle>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Delete Source</DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#c8dff0' }}>
+          <Typography sx={{ color: 'var(--color-text-primary)' }}>
             Are you sure you want to delete <strong>{deleteSource?.name}</strong>? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteSource(null)} sx={{ color: '#8da9c4' }}>Cancel</Button>
+          <Button onClick={() => setDeleteSource(null)} sx={{ color: 'var(--color-text-secondary)' }}>Cancel</Button>
           <Button
             variant="contained"
             onClick={() => deleteSource && deleteMutation.mutate(deleteSource.id)}

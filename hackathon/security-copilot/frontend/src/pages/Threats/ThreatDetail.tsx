@@ -49,16 +49,16 @@ const ThreatDetail: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Button startIcon={<BackIcon />} onClick={() => navigate('/threats')} sx={{ color: '#4a9ede', mb: 2 }}>
+      <Button startIcon={<BackIcon />} onClick={() => navigate('/threats')} sx={{ color: 'var(--color-primary)', mb: 2 }}>
         Back to Threat Feed
       </Button>
 
       {/* Header */}
-      <Card sx={{ background: 'rgba(13,27,42,0.9)', border: `1px solid ${severityColor}40`, borderRadius: 2, mb: 3 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: `1px solid ${severityColor}40`, borderRadius: 2, mb: 3 }}>
         <CardContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1 }}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 1 }}>
+              <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 1 }}>
                 {threat.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -66,18 +66,18 @@ const ThreatDetail: React.FC = () => {
                   <Chip label={threat.severity.toUpperCase()} size="small" sx={{ bgcolor: `${severityColor}20`, color: severityColor, fontWeight: 700 }} />
                 )}
                 <Chip label={threat.confidence_level.toUpperCase()} size="small" color={threat.confidence_level === 'verified' || threat.confidence_level === 'high' ? 'success' : 'default'} />
-                <Chip label={threat.source_adapter.replace('_', ' ').toUpperCase()} size="small" variant="outlined" sx={{ borderColor: 'rgba(0,120,215,0.4)', color: '#4a9ede' }} />
+                <Chip label={threat.source_adapter.replace('_', ' ').toUpperCase()} size="small" variant="outlined" sx={{ borderColor: 'var(--color-border-primary)', color: 'var(--color-primary)' }} />
                 <Chip label={threat.status} size="small" />
               </Box>
             </Box>
             {threat.url && (
-              <Button href={threat.url} target="_blank" rel="noopener" endIcon={<OpenIcon />} size="small" sx={{ color: '#4a9ede' }}>
+              <Button href={threat.url} target="_blank" rel="noopener" endIcon={<OpenIcon />} size="small" sx={{ color: 'var(--color-primary)' }}>
                 Source
               </Button>
             )}
           </Box>
 
-          <Typography sx={{ color: '#8da9c4', mt: 2 }}>
+          <Typography sx={{ color: 'var(--color-text-secondary)', mt: 2 }}>
             Collected: {new Date(threat.collected_at).toLocaleString()}
             {threat.published_at && ` · Published: ${new Date(threat.published_at).toLocaleString()}`}
           </Typography>
@@ -87,28 +87,28 @@ const ThreatDetail: React.FC = () => {
       <Grid container spacing={2}>
         {/* Description */}
         <Grid item xs={12} lg={8}>
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 2 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 1 }}>Description</Typography>
-              <Typography sx={{ color: '#c8dff0', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 1 }}>Description</Typography>
+              <Typography sx={{ color: 'var(--color-text-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
                 {threat.description || 'No description available.'}
               </Typography>
             </CardContent>
           </Card>
 
           {/* Entities */}
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 2 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <CVEIcon sx={{ color: '#1565c0' }} /> Extracted Entities
               </Typography>
 
               {cves.length > 0 && (
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#8da9c4', mb: 1, display: 'block' }}>CVE References</Typography>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', mb: 1, display: 'block' }}>CVE References</Typography>
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {cves.map((e) => (
-                      <Chip key={e.id} label={e.value} size="small" sx={{ bgcolor: '#1565c020', color: '#4a9ede', fontFamily: 'monospace' }}
+                      <Chip key={e.id} label={e.value} size="small" sx={{ bgcolor: '#1565c020', color: 'var(--color-primary)', fontFamily: 'monospace' }}
                         onClick={() => window.open(`https://nvd.nist.gov/vuln/detail/${e.value}`, '_blank')} />
                     ))}
                   </Box>
@@ -117,7 +117,7 @@ const ThreatDetail: React.FC = () => {
 
               {vulnTypes.length > 0 && (
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#8da9c4', mb: 1, display: 'block' }}>Vulnerability Types</Typography>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', mb: 1, display: 'block' }}>Vulnerability Types</Typography>
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {vulnTypes.map((e) => (
                       <Chip key={e.id} label={e.value.replace(/_/g, ' ')} size="small" sx={{ bgcolor: '#e6510020', color: '#ff9100' }} />
@@ -128,7 +128,7 @@ const ThreatDetail: React.FC = () => {
 
               {vendors.length > 0 && (
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#8da9c4', mb: 1, display: 'block' }}>Affected Vendors</Typography>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', mb: 1, display: 'block' }}>Affected Vendors</Typography>
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {vendors.map((e) => (
                       <Chip key={e.id} label={e.value} size="small" sx={{ bgcolor: '#7b1fa220', color: '#ce93d8' }} />
@@ -139,7 +139,7 @@ const ThreatDetail: React.FC = () => {
 
               {products.length > 0 && (
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#8da9c4', mb: 1, display: 'block' }}>Affected Products</Typography>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', mb: 1, display: 'block' }}>Affected Products</Typography>
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {products.map((e) => (
                       <Chip key={e.id} label={e.value} size="small" sx={{ bgcolor: '#0097a720', color: '#80deea' }} />
@@ -149,7 +149,7 @@ const ThreatDetail: React.FC = () => {
               )}
 
               {threat.entities.length === 0 && (
-                <Typography variant="body2" sx={{ color: '#8da9c4' }}>No entities extracted.</Typography>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>No entities extracted.</Typography>
               )}
             </CardContent>
           </Card>
@@ -158,25 +158,25 @@ const ThreatDetail: React.FC = () => {
         {/* Scores sidebar */}
         <Grid item xs={12} lg={4}>
           {/* Confidence */}
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 2 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <VerifiedIcon sx={{ color: '#0078d4' }} /> Confidence
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <VerifiedIcon sx={{ color: 'var(--color-primary)' }} /> Confidence
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                <Typography variant="h3" sx={{ color: '#0078d4', fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ color: 'var(--color-primary)', fontWeight: 700 }}>
                   {threat.confidence_score}
                 </Typography>
                 <Box>
                   <Chip label={threat.confidence_level.toUpperCase()} size="small" color={threat.confidence_level === 'verified' || threat.confidence_level === 'high' ? 'success' : 'default'} />
                 </Box>
               </Box>
-              <LinearProgress variant="determinate" value={threat.confidence_score} sx={{ height: 6, borderRadius: 3, bgcolor: 'rgba(0,120,215,0.15)', '& .MuiLinearProgress-bar': { bgcolor: '#0078d4' }, mb: 2 }} />
+              <LinearProgress variant="determinate" value={threat.confidence_score} sx={{ height: 6, borderRadius: 3, bgcolor: 'var(--color-border-primary)', '& .MuiLinearProgress-bar': { bgcolor: 'var(--color-primary)' }, mb: 2 }} />
               {threat.confidence_reasoning && threat.confidence_reasoning.length > 0 && (
                 <List dense>
                   {threat.confidence_reasoning.map((r, i) => (
                     <ListItem key={i} sx={{ py: 0.2, px: 0 }}>
-                      <ListItemText primary={r} primaryTypographyProps={{ fontSize: 12, color: '#8da9c4' }} />
+                      <ListItemText primary={r} primaryTypographyProps={{ fontSize: 12, color: 'var(--color-text-secondary)' }} />
                     </ListItem>
                   ))}
                 </List>
@@ -186,9 +186,9 @@ const ThreatDetail: React.FC = () => {
 
           {/* Risk */}
           {ra && (
-            <Card sx={{ background: 'rgba(13,27,42,0.9)', border: `1px solid ${SEVERITY_COLORS[ra.severity] ?? '#607d8b'}40`, borderRadius: 2, mb: 2 }}>
+            <Card sx={{ background: 'var(--color-card-bg)', border: `1px solid ${SEVERITY_COLORS[ra.severity] ?? '#607d8b'}40`, borderRadius: 2, mb: 2 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <RiskIcon sx={{ color: SEVERITY_COLORS[ra.severity] ?? '#607d8b' }} /> Risk Assessment
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
@@ -197,7 +197,7 @@ const ThreatDetail: React.FC = () => {
                   </Typography>
                   <Chip label={ra.severity.toUpperCase()} size="small" sx={{ bgcolor: `${SEVERITY_COLORS[ra.severity] ?? '#607d8b'}20`, color: SEVERITY_COLORS[ra.severity] ?? '#607d8b', fontWeight: 700 }} />
                 </Box>
-                <LinearProgress variant="determinate" value={ra.risk_score} sx={{ height: 6, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: SEVERITY_COLORS[ra.severity] ?? '#607d8b' }, mb: 2 }} />
+                <LinearProgress variant="determinate" value={ra.risk_score} sx={{ height: 6, borderRadius: 3, bgcolor: 'var(--color-bg-subtle)', '& .MuiLinearProgress-bar': { bgcolor: SEVERITY_COLORS[ra.severity] ?? '#607d8b' }, mb: 2 }} />
 
                 <Table size="small">
                   <TableBody>
@@ -209,8 +209,8 @@ const ThreatDetail: React.FC = () => {
                       ['Mention Velocity (24h)', String(ra.mention_velocity)],
                     ].map(([label, val]) => (
                       <TableRow key={label} sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)', py: 0.5 } }}>
-                        <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>{label}</TableCell>
-                        <TableCell sx={{ color: '#c8dff0', fontSize: 12, fontWeight: 500 }}>{val}</TableCell>
+                        <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>{label}</TableCell>
+                        <TableCell sx={{ color: 'var(--color-text-primary)', fontSize: 12, fontWeight: 500 }}>{val}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -219,7 +219,7 @@ const ThreatDetail: React.FC = () => {
                 {ra.reasons && ra.reasons.length > 0 && (
                   <Box sx={{ mt: 1 }}>
                     {ra.reasons.map((r, i) => (
-                      <Typography key={i} variant="caption" sx={{ display: 'block', color: '#8da9c4', mt: 0.3 }}>• {r}</Typography>
+                      <Typography key={i} variant="caption" sx={{ display: 'block', color: 'var(--color-text-secondary)', mt: 0.3 }}>• {r}</Typography>
                     ))}
                   </Box>
                 )}
@@ -229,13 +229,13 @@ const ThreatDetail: React.FC = () => {
 
           {/* Related events */}
           {threat.related_events.length > 0 && (
-            <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+            <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 1 }}>Related Events</Typography>
+                <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 1 }}>Related Events</Typography>
                 {threat.related_events.map((rel) => (
                   <Box key={rel.event_id} sx={{ display: 'flex', justifyContent: 'space-between', py: 0.5, cursor: 'pointer' }}
                     onClick={() => navigate(`/threats/${rel.event_id}`)}>
-                    <Typography variant="body2" sx={{ color: '#4a9ede' }}>Event #{rel.event_id}</Typography>
+                    <Typography variant="body2" sx={{ color: 'var(--color-primary)' }}>Event #{rel.event_id}</Typography>
                     <Chip label={`${(rel.similarity * 100).toFixed(0)}% match`} size="small" sx={{ fontSize: 11, height: 18 }} />
                   </Box>
                 ))}

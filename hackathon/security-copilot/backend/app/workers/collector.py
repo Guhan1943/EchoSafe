@@ -58,10 +58,13 @@ class CollectionWorker:
 
     def run_collection(self, db_session_factory: Callable) -> None:
         """
-        Execute a single collection run across all active sources.
+        Execute a single collection run across all active sources,
+        then verify any articles still in 'new' status.
         Called by APScheduler on the configured interval.
         """
         from app.services.collection import CollectionService
+        from app.services.verification import VerificationService
+        from app.models.article import Article
 
         db = db_session_factory()
         try:
@@ -72,6 +75,20 @@ class CollectionWorker:
                 result.get("sources_processed", 0),
                 result.get("total_collected", 0),
             )
+
+            # Auto-verify all articles still in 'new' status
+            new_articles = db.query(Article).filter(Article.status == "new").all()
+            if new_articles:
+                logger.info("Auto-verifying %d unverified article(s)...", len(new_articles))
+                verify_service = VerificationService(db)
+                verified = 0
+                for article in new_articles:
+                    try:
+                        verify_service.verify_article(article.id)
+                        verified += 1
+                    except Exception as exc:
+                        logger.warning("Failed to verify article %d: %s", article.id, exc)
+                logger.info("Auto-verification complete: %d/%d verified", verified, len(new_articles))
         except Exception as exc:
             logger.error("Scheduled collection failed: %s", exc, exc_info=True)
             try:

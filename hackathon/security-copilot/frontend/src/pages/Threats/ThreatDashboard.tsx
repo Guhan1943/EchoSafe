@@ -71,7 +71,7 @@ const ThreatDashboard: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700 }}>Threat Intelligence Dashboard</Typography>
+        <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>Threat Intelligence Dashboard</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           {isAnalyst && (
             <Button variant="contained" onClick={() => collectMutation.mutate()} disabled={collectMutation.isPending}
@@ -79,7 +79,7 @@ const ThreatDashboard: React.FC = () => {
               {collectMutation.isPending ? 'Collecting…' : 'Run Collectors'}
             </Button>
           )}
-          <Button variant="outlined" onClick={() => navigate('/threats')} sx={{ color: '#4a9ede', borderColor: 'rgba(0,120,215,0.4)' }}>
+          <Button variant="outlined" onClick={() => navigate('/threats')} sx={{ color: 'var(--color-primary)', borderColor: 'var(--color-border-primary)' }}>
             View All Threats
           </Button>
         </Box>
@@ -88,19 +88,19 @@ const ThreatDashboard: React.FC = () => {
       {/* KPI cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Threats', value: stats?.total ?? 0, color: '#0078d4' },
-          { label: 'Duplicates Filtered', value: stats?.duplicates ?? 0, color: '#8da9c4' },
+          { label: 'Total Threats', value: stats?.total ?? 0, color: 'var(--color-primary)' },
+          { label: 'Duplicates Filtered', value: stats?.duplicates ?? 0, color: 'var(--color-text-secondary)' },
           { label: 'Critical', value: stats?.by_severity?.critical ?? 0, color: '#d32f2f' },
           { label: 'High', value: stats?.by_severity?.high ?? 0, color: '#f57c00' },
           { label: 'Verified Confidence', value: stats?.by_confidence?.verified ?? 0, color: '#388e3c' },
           { label: 'CISA KEV', value: stats?.by_source?.cisa ?? 0, color: '#7b1fa2' },
         ].map((card) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={card.label}>
-            <Card sx={{ background: 'rgba(13,27,42,0.9)', border: `1px solid ${card.color}30`, borderRadius: 2 }}>
+            <Card sx={{ background: 'var(--color-card-bg)', border: `1px solid ${card.color}30`, borderRadius: 2 }}>
               <CardContent sx={{ pb: '12px !important' }}>
-                <Typography variant="body2" sx={{ color: '#8da9c4', mb: 0.5, fontSize: 12 }}>{card.label}</Typography>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 0.5, fontSize: 12 }}>{card.label}</Typography>
                 {statsLoading ? (
-                  <Skeleton width={60} height={36} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                  <Skeleton width={60} height={36} sx={{ bgcolor: 'var(--color-bg-subtle)' }} />
                 ) : (
                   <Typography variant="h4" sx={{ color: card.color, fontWeight: 700 }}>{card.value}</Typography>
                 )}
@@ -113,9 +113,9 @@ const ThreatDashboard: React.FC = () => {
       <Grid container spacing={3}>
         {/* Severity distribution */}
         <Grid item xs={12} md={5}>
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, height: 300 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 300 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 1 }}>Severity Distribution</Typography>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 1 }}>Severity Distribution</Typography>
               {statsLoading ? <Skeleton height={220} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} /> : (
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
@@ -134,14 +134,14 @@ const ThreatDashboard: React.FC = () => {
 
         {/* Source breakdown */}
         <Grid item xs={12} md={7}>
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, height: 300 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 300 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 1 }}>Threats by Source</Typography>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 1 }}>Threats by Source</Typography>
               {statsLoading ? <Skeleton height={220} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} /> : (
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={sourceChartData}>
-                    <XAxis dataKey="name" stroke="#8da9c4" tick={{ fill: '#8da9c4', fontSize: 12 }} />
-                    <YAxis stroke="#8da9c4" tick={{ fill: '#8da9c4', fontSize: 12 }} />
+                    <XAxis dataKey="name" stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
+                    <YAxis stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
                     <Tooltip />
                     <Bar dataKey="count" fill="#f57c00" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -153,16 +153,16 @@ const ThreatDashboard: React.FC = () => {
 
         {/* High risk */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(211,47,47,0.3)', borderRadius: 2 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid rgba(211,47,47,0.3)', borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>High Risk Threats</Typography>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>High Risk Threats</Typography>
               {hrLoading ? <Skeleton height={200} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} /> : (
                 <Box sx={{ overflowX: 'auto' }}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
                         {['Title', 'Severity', 'Risk'].map((h) => (
-                          <TableCell key={h} sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 11 }}>{h}</TableCell>
+                          <TableCell key={h} sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 11 }}>{h}</TableCell>
                         ))}
                       </TableRow>
                     </TableHead>
@@ -170,13 +170,13 @@ const ThreatDashboard: React.FC = () => {
                       {highRisk?.map((t) => (
                         <TableRow key={t.id} hover sx={{ cursor: 'pointer', '& td': { borderBottom: '1px solid rgba(0,120,215,0.06)' } }}
                           onClick={() => navigate(`/threats/${t.id}`)}>
-                          <TableCell sx={{ color: '#c8dff0', fontSize: 12, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-text-primary)', fontSize: 12, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</TableCell>
                           <TableCell>
                             {t.severity && <Chip label={t.severity} size="small" sx={{ fontSize: 10, height: 18, bgcolor: `${SEVERITY_COLORS[t.severity] ?? '#607d8b'}20`, color: SEVERITY_COLORS[t.severity] ?? '#607d8b' }} />}
                           </TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <LinearProgress variant="determinate" value={t.risk_score} sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: '#d32f2f' } }} />
+                              <LinearProgress variant="determinate" value={t.risk_score} sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'var(--color-bg-subtle)', '& .MuiLinearProgress-bar': { bgcolor: '#d32f2f' } }} />
                               <Typography variant="caption" sx={{ color: '#d32f2f', fontWeight: 700 }}>{t.risk_score}</Typography>
                             </Box>
                           </TableCell>
@@ -192,17 +192,17 @@ const ThreatDashboard: React.FC = () => {
 
         {/* Collector health */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ background: 'rgba(13,27,42,0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>Collector Health</Typography>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>Collector Health</Typography>
               {(health as any[])?.map((h: any) => (
                 <Box key={h.name ?? h.adapter} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1, borderBottom: '1px solid rgba(0,120,215,0.08)' }}>
                   <Box>
-                    <Typography variant="body2" sx={{ color: '#c8dff0' }}>
+                    <Typography variant="body2" sx={{ color: 'var(--color-text-primary)' }}>
                       {SOURCE_LABELS[h.name ?? h.adapter] ?? (h.name ?? h.adapter)}
                     </Typography>
                     {h.last_success && (
-                      <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                      <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                         Last: {new Date(h.last_success).toLocaleString()}
                       </Typography>
                     )}
@@ -215,7 +215,7 @@ const ThreatDashboard: React.FC = () => {
                   />
                 </Box>
               ))}
-              {!health && <Typography variant="body2" sx={{ color: '#8da9c4' }}>Loading health status…</Typography>}
+              {!health && <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>Loading health status…</Typography>}
             </CardContent>
           </Card>
         </Grid>

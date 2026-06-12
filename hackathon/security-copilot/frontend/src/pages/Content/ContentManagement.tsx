@@ -134,19 +134,19 @@ const ContentManagement: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 3 }}>
+      <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 3 }}>
         Content Management
       </Typography>
 
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
-        <Box sx={{ borderBottom: '1px solid rgba(0,120,215,0.2)' }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
+        <Box sx={{ borderBottom: '1px solid var(--color-border-primary)' }}>
           <Tabs
             value={tabValue}
             onChange={(_, v) => setTabValue(v)}
             sx={{
-              '& .MuiTab-root': { color: '#8da9c4', textTransform: 'none' },
-              '& .Mui-selected': { color: '#0078d4' },
-              '& .MuiTabs-indicator': { bgcolor: '#0078d4' },
+              '& .MuiTab-root': { color: 'var(--color-text-secondary)', textTransform: 'none' },
+              '& .Mui-selected': { color: 'var(--color-primary)' },
+              '& .MuiTabs-indicator': { bgcolor: 'var(--color-primary)' },
             }}
           >
             <Tab label="Generated Content" />
@@ -168,7 +168,7 @@ const ContentManagement: React.FC = () => {
                 No generated content yet. Approve an article and generate content from the{' '}
                 <Button
                   size="small"
-                  sx={{ p: 0, color: '#4a9ede', textTransform: 'none' }}
+                  sx={{ p: 0, color: 'var(--color-primary)', textTransform: 'none' }}
                   onClick={() => navigate('/intelligence')}
                 >
                   Intelligence Feed
@@ -184,7 +184,7 @@ const ContentManagement: React.FC = () => {
                         {['ID', 'Article', 'Type', 'Approved', 'Updated', 'Actions'].map((h) => (
                           <TableCell
                             key={h}
-                            sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12 }}
+                            sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12 }}
                           >
                             {h}
                           </TableCell>
@@ -197,17 +197,17 @@ const ContentManagement: React.FC = () => {
                           key={content.id}
                           sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' } }}
                         >
-                          <TableCell sx={{ color: '#4a9ede' }}>#{content.id}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-primary)' }}>#{content.id}</TableCell>
                           <TableCell>
                             <Button
                               size="small"
-                              sx={{ color: '#4a9ede', p: 0, textTransform: 'none', fontSize: 12 }}
+                              sx={{ color: 'var(--color-primary)', p: 0, textTransform: 'none', fontSize: 12 }}
                               onClick={() => navigate(`/intelligence/${content.article_id}`)}
                             >
                               Article #{content.article_id}
                             </Button>
                           </TableCell>
-                          <TableCell sx={{ color: '#c8dff0', fontSize: 13 }}>
+                          <TableCell sx={{ color: 'var(--color-text-primary)', fontSize: 13 }}>
                             {contentTypeLabel[content.content_type] ?? content.content_type}
                           </TableCell>
                           <TableCell>
@@ -218,12 +218,12 @@ const ContentManagement: React.FC = () => {
                               sx={{ fontSize: 11, height: 20 }}
                             />
                           </TableCell>
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                             {new Date(content.updated_at).toLocaleString()}
                           </TableCell>
                           <TableCell>
                             <Tooltip title="Edit">
-                              <IconButton size="small" onClick={() => openEditor(content)} sx={{ color: '#4a9ede' }}>
+                              <IconButton size="small" onClick={() => openEditor(content)} sx={{ color: 'var(--color-primary)' }}>
                                 <EditIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
@@ -240,7 +240,7 @@ const ContentManagement: React.FC = () => {
                               <IconButton
                                 size="small"
                                 onClick={() => exportMutation.mutate(content.id)}
-                                sx={{ color: '#4a9ede' }}
+                                sx={{ color: 'var(--color-primary)' }}
                               >
                                 <DownloadIcon fontSize="small" />
                               </IconButton>
@@ -259,7 +259,7 @@ const ContentManagement: React.FC = () => {
                   rowsPerPage={rowsPerPage}
                   onRowsPerPageChange={() => {}}
                   rowsPerPageOptions={[20]}
-                  sx={{ color: '#8da9c4', borderTop: '1px solid rgba(0,120,215,0.2)' }}
+                  sx={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-border-primary)' }}
                 />
               </>
             )}
@@ -284,7 +284,7 @@ const ContentManagement: React.FC = () => {
                         {['ID', 'Content ID', 'Article', 'Platform', 'Status', 'Published At'].map((h) => (
                           <TableCell
                             key={h}
-                            sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12 }}
+                            sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12 }}
                           >
                             {h}
                           </TableCell>
@@ -297,18 +297,18 @@ const ContentManagement: React.FC = () => {
                           key={pub.id}
                           sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' } }}
                         >
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>#{pub.id}</TableCell>
-                          <TableCell sx={{ color: '#4a9ede', fontSize: 12 }}>#{pub.generated_content_id}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>#{pub.id}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-primary)', fontSize: 12 }}>#{pub.generated_content_id}</TableCell>
                           <TableCell>
                             <Button
                               size="small"
-                              sx={{ color: '#4a9ede', p: 0, textTransform: 'none', fontSize: 12 }}
+                              sx={{ color: 'var(--color-primary)', p: 0, textTransform: 'none', fontSize: 12 }}
                               onClick={() => navigate(`/intelligence/${pub.article_id}`)}
                             >
                               Article #{pub.article_id}
                             </Button>
                           </TableCell>
-                          <TableCell sx={{ color: '#c8dff0', fontSize: 13 }}>{pub.platform}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-text-primary)', fontSize: 13 }}>{pub.platform}</TableCell>
                           <TableCell>
                             <Chip
                               label={pub.status}
@@ -317,7 +317,7 @@ const ContentManagement: React.FC = () => {
                               sx={{ fontSize: 11, height: 20 }}
                             />
                           </TableCell>
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                             {new Date(pub.published_at).toLocaleString()}
                           </TableCell>
                         </TableRow>
@@ -333,7 +333,7 @@ const ContentManagement: React.FC = () => {
                   rowsPerPage={rowsPerPage}
                   onRowsPerPageChange={() => {}}
                   rowsPerPageOptions={[20]}
-                  sx={{ color: '#8da9c4', borderTop: '1px solid rgba(0,120,215,0.2)' }}
+                  sx={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-border-primary)' }}
                 />
               </>
             )}
@@ -351,7 +351,7 @@ const ContentManagement: React.FC = () => {
           sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' },
         }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd', borderBottom: '1px solid rgba(0,120,215,0.2)' }}>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border-primary)' }}>
           Edit Content — {editingContent && contentTypeLabel[editingContent.content_type]}
         </DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
@@ -363,8 +363,8 @@ const ContentManagement: React.FC = () => {
             size="small"
             sx={{
               mb: 2,
-              '& .MuiOutlinedInput-root': { color: '#e8f4fd', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } },
-              '& .MuiInputLabel-root': { color: '#4a9ede' },
+              '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' } },
+              '& .MuiInputLabel-root': { color: 'var(--color-primary)' },
             }}
           />
           <TextField
@@ -375,19 +375,19 @@ const ContentManagement: React.FC = () => {
             multiline
             rows={12}
             sx={{
-              '& .MuiOutlinedInput-root': { color: '#e8f4fd', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' }, fontFamily: 'monospace', fontSize: 13 },
-              '& .MuiInputLabel-root': { color: '#4a9ede' },
+              '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)', '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' }, fontFamily: 'monospace', fontSize: 13 },
+              '& .MuiInputLabel-root': { color: 'var(--color-primary)' },
             }}
           />
         </DialogContent>
-        <DialogActions sx={{ borderTop: '1px solid rgba(0,120,215,0.2)', px: 3, py: 2 }}>
-          <Button onClick={() => setEditingContent(null)} sx={{ color: '#8da9c4' }}>Cancel</Button>
+        <DialogActions sx={{ borderTop: '1px solid var(--color-border-primary)', px: 3, py: 2 }}>
+          <Button onClick={() => setEditingContent(null)} sx={{ color: 'var(--color-text-secondary)' }}>Cancel</Button>
           <Button
             variant="contained"
             onClick={handleSave}
             disabled={updateMutation.isPending}
             startIcon={<EditIcon />}
-            sx={{ bgcolor: '#0078d4', '&:hover': { bgcolor: '#006cc1' } }}
+            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: '#006cc1' } }}
           >
             Save Changes
           </Button>
@@ -400,14 +400,14 @@ const ContentManagement: React.FC = () => {
         onClose={() => setPublishingContent(null)}
         PaperProps={{ sx: { background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)' } }}
       >
-        <DialogTitle sx={{ color: '#e8f4fd' }}>Confirm Publish</DialogTitle>
+        <DialogTitle sx={{ color: 'var(--color-text-primary)' }}>Confirm Publish</DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: '#c8dff0' }}>
+          <Typography sx={{ color: 'var(--color-text-primary)' }}>
             Are you sure you want to publish this content? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPublishingContent(null)} sx={{ color: '#8da9c4' }}>Cancel</Button>
+          <Button onClick={() => setPublishingContent(null)} sx={{ color: 'var(--color-text-secondary)' }}>Cancel</Button>
           <Button
             variant="contained"
             onClick={() => publishingContent && publishMutation.mutate(publishingContent.id)}

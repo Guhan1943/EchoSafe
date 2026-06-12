@@ -18,8 +18,10 @@ router = APIRouter()
 
 
 def _run_collect_all(user_id: Optional[int]) -> None:
-    """Background task: collect from all active sources."""
+    """Background task: collect from all active sources, then auto-verify new articles."""
     from app.database import SessionLocal
+    from app.models.article import Article
+    from app.services.verification import VerificationService
     db = SessionLocal()
     try:
         service = CollectionService(db)
@@ -42,6 +44,20 @@ def _run_collect_all(user_id: Optional[int]) -> None:
             result.get("sources_processed", 0),
             result.get("total_collected", 0),
         )
+
+        # Auto-verify all articles still in 'new' status
+        new_articles = db.query(Article).filter(Article.status == "new").all()
+        if new_articles:
+            logger.info("Auto-verifying %d unverified article(s)...", len(new_articles))
+            verify_service = VerificationService(db)
+            verified = 0
+            for article in new_articles:
+                try:
+                    verify_service.verify_article(article.id)
+                    verified += 1
+                except Exception as exc:
+                    logger.warning("Failed to verify article %d: %s", article.id, exc)
+            logger.info("Auto-verification complete: %d/%d verified", verified, len(new_articles))
     except Exception as exc:
         logger.error("collect-all background task failed: %s", exc)
         db.rollback()
@@ -65,6 +81,57 @@ def collect_all(
     return {
         "message": f"Collection started for {sources_count} active source(s)",
         "sources_processed": sources_count,
+    }
+
+
+def _run_verify_new(user_id: Optional[int]) -> None:
+    """Background task: verify all articles currently in 'new' status."""
+    from app.database import SessionLocal
+    from app.models.article import Article
+    from app.services.verification import VerificationService
+    db = SessionLocal()
+    try:
+        new_articles = db.query(Article).filter(Article.status == "new").all()
+        total = len(new_articles)
+        logger.info("verify-new: processing %d article(s)", total)
+        verify_service = VerificationService(db)
+        verified = 0
+        for article in new_articles:
+            try:
+                verify_service.verify_article(article.id)
+                verified += 1
+            except Exception as exc:
+                logger.warning("Failed to verify article %d: %s", article.id, exc)
+
+        audit = AuditLog(
+            user_id=user_id,
+            action="verify_new_articles",
+            resource_type="collector",
+            details={"total": total, "verified": verified},
+        )
+        db.add(audit)
+        db.commit()
+        logger.info("verify-new complete: %d/%d verified", verified, total)
+    except Exception as exc:
+        logger.error("verify-new background task failed: %s", exc)
+        db.rollback()
+    finally:
+        db.close()
+
+
+@router.post("/verify-new")
+def verify_new_articles(
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+) -> dict:
+    """Trigger AI verification for all unverified ('new') articles (admin only)."""
+    from app.models.article import Article
+    count = db.query(Article).filter(Article.status == "new").count()
+    background_tasks.add_task(_run_verify_new, admin.id)
+    return {
+        "message": f"Verification started for {count} unverified article(s)",
+        "queued": count,
     }
 
 

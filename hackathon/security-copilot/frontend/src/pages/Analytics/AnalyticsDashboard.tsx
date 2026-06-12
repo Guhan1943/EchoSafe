@@ -80,7 +80,7 @@ const AnalyticsDashboard: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 3 }}>
+      <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 3 }}>
         Analytics Dashboard
       </Typography>
 
@@ -94,15 +94,15 @@ const AnalyticsDashboard: React.FC = () => {
           { label: 'Avg Trust Score', value: Math.round(overview?.avg_trust_score ?? 0) },
         ].map((stat) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={stat.label}>
-            <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, height: '100%' }}>
+            <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: '100%' }}>
               <CardContent>
-                <Typography variant="body2" sx={{ color: '#8da9c4', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
                   {stat.label}
                 </Typography>
                 {overviewLoading ? (
-                  <Skeleton width={60} height={36} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                  <Skeleton width={60} height={36} sx={{ bgcolor: 'var(--color-bg-subtle)' }} />
                 ) : (
-                  <Typography variant="h4" sx={{ color: '#e8f4fd', fontWeight: 700 }}>
+                  <Typography variant="h4" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
                     {stat.value}
                   </Typography>
                 )}
@@ -114,9 +114,9 @@ const AnalyticsDashboard: React.FC = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, height: 360 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 360 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                 Articles by Severity
               </Typography>
               {overviewLoading ? (
@@ -139,9 +139,9 @@ const AnalyticsDashboard: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, height: 360 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 360 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                 Trust Score Distribution
               </Typography>
               {trustLoading ? (
@@ -150,8 +150,8 @@ const AnalyticsDashboard: React.FC = () => {
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={trustScores?.distribution ?? []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                    <XAxis dataKey="range" stroke="#8da9c4" tick={{ fill: '#8da9c4', fontSize: 12 }} />
-                    <YAxis stroke="#8da9c4" tick={{ fill: '#8da9c4', fontSize: 12 }} />
+                    <XAxis dataKey="range" stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
+                    <YAxis stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
                     <Tooltip />
                     <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                       {(trustScores?.distribution ?? []).map((_, index) => (
@@ -166,9 +166,9 @@ const AnalyticsDashboard: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, height: 360 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, height: 360 }}>
             <CardContent sx={{ height: '100%' }}>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                 Workflow Status
               </Typography>
               {overviewLoading ? (
@@ -177,10 +177,10 @@ const AnalyticsDashboard: React.FC = () => {
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={statusData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                    <XAxis type="number" stroke="#8da9c4" tick={{ fill: '#8da9c4', fontSize: 12 }} />
-                    <YAxis type="category" dataKey="name" width={120} stroke="#8da9c4" tick={{ fill: '#8da9c4', fontSize: 11 }} />
+                    <XAxis type="number" stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }} />
+                    <YAxis type="category" dataKey="name" width={120} stroke="var(--color-text-secondary)" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} />
                     <Tooltip />
-                    <Bar dataKey="value" fill="#0078d4" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="value" fill="var(--color-primary)" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -189,9 +189,9 @@ const AnalyticsDashboard: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+          <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                 Top Intelligence Sources
               </Typography>
               {sourcesLoading ? (
@@ -202,7 +202,7 @@ const AnalyticsDashboard: React.FC = () => {
                     <TableHead>
                       <TableRow>
                         {['Source', 'Articles', 'Avg Trust', 'Last Collected'].map((header) => (
-                          <TableCell key={header} sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12 }}>
+                          <TableCell key={header} sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12 }}>
                             {header}
                           </TableCell>
                         ))}
@@ -211,8 +211,8 @@ const AnalyticsDashboard: React.FC = () => {
                     <TableBody>
                       {sourceStats?.map((source) => (
                         <TableRow key={source.source_id} sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' } }}>
-                          <TableCell sx={{ color: '#c8dff0' }}>{source.name}</TableCell>
-                          <TableCell sx={{ color: '#4a9ede' }}>{source.article_count}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-text-primary)' }}>{source.name}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-primary)' }}>{source.article_count}</TableCell>
                           <TableCell>
                             <Chip
                               label={source.avg_trust_score}
@@ -221,7 +221,7 @@ const AnalyticsDashboard: React.FC = () => {
                               sx={{ fontSize: 11, height: 20 }}
                             />
                           </TableCell>
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                             {source.last_collected ? new Date(source.last_collected).toLocaleString() : '—'}
                           </TableCell>
                         </TableRow>

@@ -33,7 +33,7 @@ const severityColor: Record<string, string> = {
   high: '#f57c00',
   medium: '#f9a825',
   low: '#388e3c',
-  info: '#1565c0',
+  info: 'var(--color-primary-dark)',
 };
 
 const statusColor: Record<string, 'default' | 'warning' | 'success' | 'error' | 'info' | 'primary' | 'secondary'> = {
@@ -57,7 +57,7 @@ interface StatCardProps {
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, loading }) => (
   <Card
     sx={{
-      background: 'rgba(13, 27, 42, 0.9)',
+      background: 'var(--color-card-bg)',
       border: `1px solid ${color}40`,
       borderRadius: 2,
       '&:hover': { borderColor: color, boxShadow: `0 0 15px ${color}30` },
@@ -67,13 +67,13 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, loading 
     <CardContent>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="body2" sx={{ color: '#8da9c4', mb: 1 }}>
+          <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
             {title}
           </Typography>
           {loading ? (
-            <Skeleton width={80} height={40} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+            <Skeleton width={80} height={40} sx={{ bgcolor: 'var(--color-bg-subtle)' }} />
           ) : (
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#e8f4fd' }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>
               {value}
             </Typography>
           )}
@@ -120,7 +120,7 @@ const Dashboard: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700 }}>
+        <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
           Security Intelligence Overview
         </Typography>
       </Box>
@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
             title="Total Articles"
             value={overview?.total_articles ?? 0}
             icon={<ArticleIcon />}
-            color="#0078d4"
+            color="var(--color-primary)"
             loading={overviewLoading}
           />
         </Grid>
@@ -170,7 +170,7 @@ const Dashboard: React.FC = () => {
         <Grid item xs={12} md={4}>
           <Card
             sx={{
-              background: 'rgba(13, 27, 42, 0.9)',
+              background: 'var(--color-card-bg)',
               border: '1px solid rgba(0, 120, 215, 0.2)',
               borderRadius: 2,
               height: '100%',
@@ -178,16 +178,16 @@ const Dashboard: React.FC = () => {
           >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <TrendingIcon sx={{ color: '#0078d4' }} />
-                <Typography variant="h6" sx={{ color: '#e8f4fd' }}>
+                <TrendingIcon sx={{ color: 'var(--color-primary)' }} />
+                <Typography variant="h6" sx={{ color: 'var(--color-text-primary)' }}>
                   AI Verification Rate
                 </Typography>
               </Box>
               {overviewLoading ? (
-                <Skeleton height={60} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                <Skeleton height={60} sx={{ bgcolor: 'var(--color-bg-subtle)' }} />
               ) : (
                 <>
-                  <Typography variant="h3" sx={{ color: '#0078d4', fontWeight: 700, mb: 1 }}>
+                  <Typography variant="h3" sx={{ color: 'var(--color-primary)', fontWeight: 700, mb: 1 }}>
                     {Math.round(overview?.verification_success_rate ?? 0)}%
                   </Typography>
                   <LinearProgress
@@ -196,15 +196,15 @@ const Dashboard: React.FC = () => {
                     sx={{
                       height: 8,
                       borderRadius: 4,
-                      bgcolor: 'rgba(0,120,215,0.15)',
-                      '& .MuiLinearProgress-bar': { bgcolor: '#0078d4', borderRadius: 4 },
+                      bgcolor: 'var(--color-border-primary)',
+                      '& .MuiLinearProgress-bar': { bgcolor: 'var(--color-primary)', borderRadius: 4 },
                     }}
                   />
-                  <Typography variant="caption" sx={{ color: '#8da9c4', mt: 1, display: 'block' }}>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', mt: 1, display: 'block' }}>
                     {overview?.verified_count ?? 0} of {overview?.total_articles ?? 0} articles verified
                   </Typography>
                   <Box sx={{ mt: 2 }}>
-                    <Typography variant="body2" sx={{ color: '#8da9c4', mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
                       Avg Trust Score
                     </Typography>
                     <LinearProgress
@@ -231,18 +231,18 @@ const Dashboard: React.FC = () => {
         <Grid item xs={12} md={8}>
           <Card
             sx={{
-              background: 'rgba(13, 27, 42, 0.9)',
+              background: 'var(--color-card-bg)',
               border: '1px solid rgba(0, 120, 215, 0.2)',
               borderRadius: 2,
             }}
           >
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                 Quick Actions
               </Typography>
               <Grid container spacing={1}>
                 {[
-                  { label: 'Intelligence Feed', path: '/intelligence', color: '#0078d4' },
+                  { label: 'Intelligence Feed', path: '/intelligence', color: 'var(--color-primary)' },
                   { label: 'Review Queue', path: '/review', color: '#f9a825' },
                   { label: 'Content Management', path: '/content', color: '#7b1fa2' },
                   { label: 'Analytics', path: '/analytics', color: '#388e3c' },
@@ -275,17 +275,17 @@ const Dashboard: React.FC = () => {
         <Grid item xs={12}>
           <Card
             sx={{
-              background: 'rgba(13, 27, 42, 0.9)',
+              background: 'var(--color-card-bg)',
               border: '1px solid rgba(0, 120, 215, 0.2)',
               borderRadius: 2,
             }}
           >
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ color: '#e8f4fd' }}>
+                <Typography variant="h6" sx={{ color: 'var(--color-text-primary)' }}>
                   Recent Intelligence
                 </Typography>
-                <Button size="small" onClick={() => navigate('/intelligence')} sx={{ color: '#0078d4' }}>
+                <Button size="small" onClick={() => navigate('/intelligence')} sx={{ color: 'var(--color-primary)' }}>
                   View All
                 </Button>
               </Box>
@@ -296,7 +296,7 @@ const Dashboard: React.FC = () => {
                       {['Title', 'Severity', 'Status', 'Trust Score', 'Date'].map((h) => (
                         <TableCell
                           key={h}
-                          sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12 }}
+                          sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12 }}
                         >
                           {h}
                         </TableCell>
@@ -327,7 +327,7 @@ const Dashboard: React.FC = () => {
                           >
                             <TableCell
                               sx={{
-                                color: '#c8dff0',
+                                color: 'var(--color-text-primary)',
                                 maxWidth: 300,
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -349,7 +349,7 @@ const Dashboard: React.FC = () => {
                                   }}
                                 />
                               ) : (
-                                <Typography variant="caption" sx={{ color: '#8da9c4' }}>—</Typography>
+                                <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>—</Typography>
                               )}
                             </TableCell>
                             <TableCell>
@@ -369,7 +369,7 @@ const Dashboard: React.FC = () => {
                                     width: 50,
                                     height: 4,
                                     borderRadius: 2,
-                                    bgcolor: 'rgba(255,255,255,0.1)',
+                                    bgcolor: 'var(--color-bg-subtle)',
                                     '& .MuiLinearProgress-bar': {
                                       bgcolor:
                                         article.trust_score >= 70
@@ -380,12 +380,12 @@ const Dashboard: React.FC = () => {
                                     },
                                   }}
                                 />
-                                <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                                <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                                   {article.trust_score}
                                 </Typography>
                               </Box>
                             </TableCell>
-                            <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>
+                            <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
                               {article.published_at
                                 ? new Date(article.published_at).toLocaleDateString()
                                 : new Date(article.collected_at).toLocaleDateString()}

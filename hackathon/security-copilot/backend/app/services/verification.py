@@ -15,11 +15,13 @@ logger = logging.getLogger(__name__)
 
 TRUSTED_SOURCE_NAMES = [
     "hackernews",
+    "hacker news",       # matches "The Hacker News"
     "bleepingcomputer",
     "securityweek",
     "threatpost",
     "krebs",
     "darkreading",
+    "dark reading",      # matches "Dark Reading"
     "thehackernews",
     "cisa",
     "nvd",
@@ -82,8 +84,9 @@ class VerificationService:
         # Calculate trust score
         trust_score, breakdown = self._calculate_trust_score(checks, cves)
 
-        # Determine status
-        new_status = "pending_manual_review" if trust_score >= 80 else "rejected"
+        # Determine status — any article with ≥1 positive signal goes to manual review;
+        # only articles with zero verifiable signals are auto-rejected
+        new_status = "pending_manual_review" if trust_score >= 20 else "rejected"
 
         # Upsert verification result
         result = (

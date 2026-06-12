@@ -49,11 +49,11 @@ const AuditLogs: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 3 }}>
+      <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 3 }}>
         Audit Logs
       </Typography>
 
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
         <CardContent sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <TextField
             label="Action"
@@ -63,7 +63,7 @@ const AuditLogs: React.FC = () => {
               setPage(0);
               setActionFilter(e.target.value);
             }}
-            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { color: '#e8f4fd' } }}
+            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)' } }}
           />
           <TextField
             label="Resource Type"
@@ -73,7 +73,7 @@ const AuditLogs: React.FC = () => {
               setPage(0);
               setResourceFilter(e.target.value);
             }}
-            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { color: '#e8f4fd' } }}
+            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)' } }}
           />
           <TextField
             label="User ID"
@@ -83,15 +83,15 @@ const AuditLogs: React.FC = () => {
               setPage(0);
               setUserIdFilter(e.target.value);
             }}
-            sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { color: '#e8f4fd' } }}
+            sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { color: 'var(--color-text-primary)' } }}
           />
-          <Button variant="outlined" onClick={() => refetch()} disabled={isFetching} sx={{ color: '#4a9ede', borderColor: 'rgba(0,120,215,0.4)' }}>
+          <Button variant="outlined" onClick={() => refetch()} disabled={isFetching} sx={{ color: 'var(--color-primary)', borderColor: 'var(--color-border-primary)' }}>
             Refresh
           </Button>
         </CardContent>
       </Card>
 
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
         <CardContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>Failed to load audit logs.</Alert>}
 
@@ -102,7 +102,7 @@ const AuditLogs: React.FC = () => {
                   {['Time', 'User', 'Action', 'Resource', 'IP', 'Details'].map((header) => (
                     <TableCell
                       key={header}
-                      sx={{ color: '#8da9c4', borderBottom: '1px solid rgba(0,120,215,0.2)', fontSize: 12 }}
+                      sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12 }}
                     >
                       {header}
                     </TableCell>
@@ -123,22 +123,22 @@ const AuditLogs: React.FC = () => {
                   : data?.items.map((log: AuditLog) => (
                       <React.Fragment key={log.id}>
                         <TableRow sx={{ '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' } }}>
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 12, whiteSpace: 'nowrap' }}>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12, whiteSpace: 'nowrap' }}>
                             {new Date(log.created_at).toLocaleString()}
                           </TableCell>
-                          <TableCell sx={{ color: '#c8dff0', fontSize: 12 }}>
+                          <TableCell sx={{ color: 'var(--color-text-primary)', fontSize: 12 }}>
                             {log.user_id ? `#${log.user_id}` : 'System'}
                           </TableCell>
                           <TableCell>
                             <Chip label={log.action} size="small" sx={{ fontSize: 11, height: 20 }} />
                           </TableCell>
-                          <TableCell sx={{ color: '#4a9ede', fontSize: 12 }}>
+                          <TableCell sx={{ color: 'var(--color-primary)', fontSize: 12 }}>
                             {log.resource_type ?? '—'}
                             {log.resource_id ? ` #${log.resource_id}` : ''}
                           </TableCell>
-                          <TableCell sx={{ color: '#8da9c4', fontSize: 12 }}>{log.ip_address ?? '—'}</TableCell>
+                          <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>{log.ip_address ?? '—'}</TableCell>
                           <TableCell>
-                            <IconButton size="small" onClick={() => toggleExpanded(log.id)} sx={{ color: '#4a9ede' }}>
+                            <IconButton size="small" onClick={() => toggleExpanded(log.id)} sx={{ color: 'var(--color-primary)' }}>
                               {expandedId === log.id ? <CollapseIcon fontSize="small" /> : <ExpandIcon fontSize="small" />}
                             </IconButton>
                           </TableCell>
@@ -153,7 +153,7 @@ const AuditLogs: React.FC = () => {
                                   p: 2,
                                   bgcolor: 'rgba(0,0,0,0.25)',
                                   borderRadius: 1,
-                                  color: '#c8dff0',
+                                  color: 'var(--color-text-primary)',
                                   fontSize: 12,
                                   overflowX: 'auto',
                                 }}
@@ -176,7 +176,7 @@ const AuditLogs: React.FC = () => {
             onPageChange={(_, nextPage) => setPage(nextPage)}
             rowsPerPage={rowsPerPage}
             rowsPerPageOptions={[25]}
-            sx={{ color: '#8da9c4', borderTop: '1px solid rgba(0,120,215,0.2)' }}
+            sx={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-border-primary)' }}
           />
         </CardContent>
       </Card>

@@ -96,8 +96,8 @@ const ReviewDetail: React.FC = () => {
   if (isLoading) {
     return (
       <Box sx={{ p: 3 }}>
-        <Skeleton height={40} width={300} sx={{ bgcolor: 'rgba(255,255,255,0.1)', mb: 2 }} />
-        <Skeleton height={300} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+        <Skeleton height={40} width={300} sx={{ bgcolor: 'var(--color-bg-subtle)', mb: 2 }} />
+        <Skeleton height={300} sx={{ bgcolor: 'var(--color-bg-subtle)' }} />
       </Box>
     );
   }
@@ -119,14 +119,14 @@ const ReviewDetail: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Button startIcon={<BackIcon />} onClick={() => navigate('/review')} sx={{ color: '#4a9ede', mb: 2 }}>
+      <Button startIcon={<BackIcon />} onClick={() => navigate('/review')} sx={{ color: 'var(--color-primary)', mb: 2 }}>
         Back to Queue
       </Button>
 
       {/* Article Header */}
-      <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 3 }}>
+      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 3 }}>
         <CardContent>
-          <Typography variant="h5" sx={{ color: '#e8f4fd', fontWeight: 700, mb: 1 }}>
+          <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 1 }}>
             {article.title}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
@@ -137,17 +137,17 @@ const ReviewDetail: React.FC = () => {
                 sx={{ bgcolor: `${severityColor[article.severity]}20`, color: severityColor[article.severity], textTransform: 'capitalize' }}
               />
             )}
-            <Chip label={`Trust: ${article.trust_score}/100`} size="small" sx={{ bgcolor: 'rgba(0,120,215,0.15)', color: '#4a9ede' }} />
+            <Chip label={`Trust: ${article.trust_score}/100`} size="small" sx={{ bgcolor: 'var(--color-border-primary)', color: 'var(--color-primary)' }} />
             {article.author && (
-              <Typography variant="caption" sx={{ color: '#8da9c4', alignSelf: 'center' }}>By {article.author}</Typography>
+              <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)', alignSelf: 'center' }}>By {article.author}</Typography>
             )}
-            <Link href={article.url} target="_blank" rel="noopener noreferrer" sx={{ color: '#4a9ede', fontSize: 12, display: 'flex', alignItems: 'center', gap: 0.3 }}>
+            <Link href={article.url} target="_blank" rel="noopener noreferrer" sx={{ color: 'var(--color-primary)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 0.3 }}>
               <OpenIcon fontSize="small" /> View Source
             </Link>
           </Box>
 
           {article.summary && (
-            <Typography sx={{ color: '#c8dff0', lineHeight: 1.7, mb: 2 }}>
+            <Typography sx={{ color: 'var(--color-text-primary)', lineHeight: 1.7, mb: 2 }}>
               {article.summary}
             </Typography>
           )}
@@ -158,24 +158,24 @@ const ReviewDetail: React.FC = () => {
         {/* AI Verification Results */}
         <Grid item xs={12} lg={8}>
           {vr ? (
-            <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2, mb: 3 }}>
+            <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 3 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>AI Verification Results</Typography>
+                <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>AI Verification Results</Typography>
 
                 <Grid container spacing={2} sx={{ mb: 3 }}>
                   {[
-                    { label: 'Authenticity', value: vr.authenticity_score, color: '#0078d4' },
+                    { label: 'Authenticity', value: vr.authenticity_score, color: 'var(--color-primary)' },
                     { label: 'Credibility', value: vr.credibility_score, color: '#388e3c' },
                   ].map(({ label, value, color }) => (
                     <Grid item xs={6} key={label}>
                       <Box sx={{ textAlign: 'center', p: 2, bgcolor: `${color}10`, borderRadius: 2, border: `1px solid ${color}30` }}>
-                        <Typography variant="caption" sx={{ color: '#8da9c4' }}>{label}</Typography>
+                        <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>{label}</Typography>
                         <Typography variant="h4" sx={{ color, fontWeight: 700 }}>{value}</Typography>
                         <LinearProgress
                           variant="determinate"
                           value={value}
                           sx={{
-                            mt: 1, height: 4, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)',
+                            mt: 1, height: 4, borderRadius: 2, bgcolor: 'var(--color-bg-subtle)',
                             '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 2 },
                           }}
                         />
@@ -187,14 +187,14 @@ const ReviewDetail: React.FC = () => {
                 {vr.business_impact && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" sx={{ color: '#f9a825', mb: 0.5 }}>Business Impact</Typography>
-                    <Typography sx={{ color: '#c8dff0', fontSize: 14, lineHeight: 1.6 }}>{vr.business_impact}</Typography>
+                    <Typography sx={{ color: 'var(--color-text-primary)', fontSize: 14, lineHeight: 1.6 }}>{vr.business_impact}</Typography>
                   </Box>
                 )}
 
                 {vr.ai_analysis && (
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" sx={{ color: '#4a9ede', mb: 0.5 }}>Analysis</Typography>
-                    <Typography sx={{ color: '#c8dff0', fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{vr.ai_analysis}</Typography>
+                    <Typography variant="subtitle2" sx={{ color: 'var(--color-primary)', mb: 0.5 }}>Analysis</Typography>
+                    <Typography sx={{ color: 'var(--color-text-primary)', fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{vr.ai_analysis}</Typography>
                   </Box>
                 )}
 
@@ -221,7 +221,7 @@ const ReviewDetail: React.FC = () => {
 
                 {vr.sources_checked && vr.sources_checked.length > 0 && (
                   <Box>
-                    <Typography variant="subtitle2" sx={{ color: '#4a9ede', mb: 0.5 }}>Sources Checked</Typography>
+                    <Typography variant="subtitle2" sx={{ color: 'var(--color-primary)', mb: 0.5 }}>Sources Checked</Typography>
                     <List dense>
                       {vr.sources_checked.map((src, i) => (
                         <ListItem key={i} sx={{ py: 0 }}>
@@ -229,8 +229,8 @@ const ReviewDetail: React.FC = () => {
                             primary={src.name}
                             secondary={src.found ? 'Confirmed' : 'Not found'}
                             sx={{
-                              '& .MuiListItemText-primary': { color: '#c8dff0', fontSize: 13 },
-                              '& .MuiListItemText-secondary': { color: src.found ? '#388e3c' : '#8da9c4', fontSize: 12 },
+                              '& .MuiListItemText-primary': { color: 'var(--color-text-primary)', fontSize: 13 },
+                              '& .MuiListItemText-secondary': { color: src.found ? '#388e3c' : 'var(--color-text-secondary)', fontSize: 12 },
                             }}
                           />
                         </ListItem>
@@ -248,25 +248,25 @@ const ReviewDetail: React.FC = () => {
 
           {/* Trust Score Breakdown */}
           {breakdownData.length > 0 && (
-            <Card sx={{ background: 'rgba(13, 27, 42, 0.9)', border: '1px solid rgba(0,120,215,0.2)', borderRadius: 2 }}>
+            <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+                <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                   Trust Score Breakdown
                 </Typography>
                 <Box sx={{ textAlign: 'center', mb: 2 }}>
                   <Typography variant="h2" sx={{ color: article.trust_score >= 70 ? '#388e3c' : article.trust_score >= 40 ? '#f9a825' : '#d32f2f', fontWeight: 700 }}>
                     {article.trust_score}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#8da9c4' }}>/ 100 Total Trust Score</Typography>
+                  <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>/ 100 Total Trust Score</Typography>
                 </Box>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={breakdownData} margin={{ top: 5, right: 20, bottom: 40, left: 0 }}>
-                    <XAxis dataKey="name" tick={{ fill: '#8da9c4', fontSize: 11 }} angle={-30} textAnchor="end" />
-                    <YAxis tick={{ fill: '#8da9c4', fontSize: 11 }} domain={[0, 100]} />
+                    <XAxis dataKey="name" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} angle={-30} textAnchor="end" />
+                    <YAxis tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} domain={[0, 100]} />
                     <ReTooltip
                       contentStyle={{ background: '#0d1b2a', border: '1px solid rgba(0,120,215,0.3)', borderRadius: 8 }}
-                      labelStyle={{ color: '#4a9ede' }}
-                      itemStyle={{ color: '#c8dff0' }}
+                      labelStyle={{ color: 'var(--color-primary)' }}
+                      itemStyle={{ color: 'var(--color-text-primary)' }}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                       {breakdownData.map((entry, index) => (
@@ -287,24 +287,24 @@ const ReviewDetail: React.FC = () => {
         <Grid item xs={12} lg={4}>
           <Card
             sx={{
-              background: 'rgba(13, 27, 42, 0.9)',
-              border: '1px solid rgba(0,120,215,0.2)',
+              background: 'var(--color-card-bg)',
+              border: '1px solid var(--color-border-primary)',
               borderRadius: 2,
               position: { lg: 'sticky' },
               top: { lg: 24 },
             }}
           >
             <CardContent>
-              <Typography variant="h6" sx={{ color: '#e8f4fd', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
                 Review Decision
               </Typography>
 
-              <Typography variant="caption" sx={{ color: '#8da9c4' }}>Status</Typography>
+              <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>Status</Typography>
               <Box sx={{ mb: 2 }}>
                 <Chip
                   label={article.status.replace(/_/g, ' ')}
                   size="small"
-                  sx={{ bgcolor: 'rgba(0,120,215,0.15)', color: '#4a9ede' }}
+                  sx={{ bgcolor: 'var(--color-border-primary)', color: 'var(--color-primary)' }}
                 />
               </Box>
 
@@ -322,11 +322,11 @@ const ReviewDetail: React.FC = () => {
                 sx={{
                   mb: 2,
                   '& .MuiOutlinedInput-root': {
-                    color: '#e8f4fd',
+                    color: 'var(--color-text-primary)',
                     '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' },
                     '&:hover fieldset': { borderColor: 'rgba(0,120,215,0.5)' },
                   },
-                  '& .MuiInputLabel-root': { color: '#4a9ede' },
+                  '& .MuiInputLabel-root': { color: 'var(--color-primary)' },
                 }}
               />
 
@@ -371,7 +371,7 @@ const ReviewDetail: React.FC = () => {
               {article.approvals && article.approvals.length > 0 && (
                 <Box sx={{ mt: 3 }}>
                   <Divider sx={{ borderColor: 'rgba(0,120,215,0.2)', mb: 1.5 }} />
-                  <Typography variant="subtitle2" sx={{ color: '#8da9c4', mb: 1 }}>
+                  <Typography variant="subtitle2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
                     Approval History
                   </Typography>
                   {article.approvals.map((approval) => (
@@ -386,12 +386,12 @@ const ReviewDetail: React.FC = () => {
                           color={approval.action === 'approved' ? 'success' : approval.action === 'rejected' ? 'error' : 'warning'}
                           sx={{ fontSize: 10, height: 18 }}
                         />
-                        <Typography variant="caption" sx={{ color: '#8da9c4' }}>
+                        <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
                           {new Date(approval.created_at).toLocaleDateString()}
                         </Typography>
                       </Box>
                       {approval.notes && (
-                        <Typography variant="caption" sx={{ color: '#c8dff0', display: 'block', mt: 0.5 }}>
+                        <Typography variant="caption" sx={{ color: 'var(--color-text-primary)', display: 'block', mt: 0.5 }}>
                           {approval.notes}
                         </Typography>
                       )}

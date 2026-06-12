@@ -52,7 +52,7 @@ const TrustScoreGauge: React.FC<TrustScoreGaugeProps> = ({
             sx={{
               height: 8,
               borderRadius: 4,
-              bgcolor: 'rgba(255,255,255,0.1)',
+              bgcolor: 'var(--color-bg-subtle)',
               '& .MuiLinearProgress-bar': {
                 bgcolor: color,
                 borderRadius: 4,
@@ -88,7 +88,7 @@ const TrustScoreGauge: React.FC<TrustScoreGaugeProps> = ({
             value={100}
             size={size}
             thickness={4}
-            sx={{ color: 'rgba(255,255,255,0.1)', position: 'absolute' }}
+            sx={{ color: 'var(--color-bg-subtle)', position: 'absolute' }}
           />
           {/* Score arc */}
           <CircularProgress

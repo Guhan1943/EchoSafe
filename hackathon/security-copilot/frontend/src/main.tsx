@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 
+import './styles/variables.css';
+
 import { store } from './store';
 import theme from './theme';
 import App from './App';

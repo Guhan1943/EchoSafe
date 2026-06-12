@@ -25,6 +25,9 @@ import ThreatDetail from './pages/Threats/ThreatDetail';
 import ThreatDashboard from './pages/Threats/ThreatDashboard';
 import PublishingChannelsPage from './pages/Publishing/PublishingChannelsPage';
 import ClientMailsPage from './pages/Publishing/ClientMailsPage';
+import BlogLayout from './pages/Blog/BlogLayout';
+import BlogLandingPage from './pages/Blog/BlogLandingPage';
+import BlogPostPage from './pages/Blog/BlogPostPage';
 
 // Layout wrapper that enforces auth then renders AppLayout with nested routes
 const ProtectedLayout: React.FC = () => (
@@ -47,6 +50,19 @@ const App: React.FC = () => {
 
         {/* Root redirect */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+        {/* Blog — standalone layout (no sidebar) */}
+        <Route
+          path="/blog"
+          element={
+            <PrivateRoute roles={['analyst', 'admin']}>
+              <BlogLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<BlogLandingPage />} />
+          <Route path=":id" element={<BlogPostPage />} />
+        </Route>
 
         {/* All protected routes live inside the AppLayout shell */}
         <Route element={<ProtectedLayout />}>

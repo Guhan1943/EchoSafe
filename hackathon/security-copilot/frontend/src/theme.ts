@@ -90,8 +90,26 @@ const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          fontWeight: 500,
-          fontSize: '0.75rem',
+          fontWeight: 600,
+          fontSize: '0.6875rem',
+          height: 24,
+          borderRadius: 6,
+        },
+        label: {
+          letterSpacing: '0.03em',
+          lineHeight: 1.2,
+        },
+      },
+    },
+    MuiBadge: {
+      styleOverrides: {
+        badge: {
+          fontWeight: 700,
+          fontSize: '0.65rem',
+          minWidth: 18,
+          height: 18,
+          padding: '0 5px',
+          boxShadow: '0 0 0 2px var(--color-bg-paper)',
         },
       },
     },

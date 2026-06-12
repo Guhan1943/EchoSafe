@@ -9,7 +9,6 @@ import {
   Toolbar,
   Box,
   Typography,
-  Chip,
   Divider,
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -79,12 +78,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Audit Logs', path: '/audit', icon: <HistoryIcon />, roles: ['admin'] },
 ];
 
-const ROLE_COLORS: Record<User['role'], 'error' | 'warning' | 'info'> = {
-  admin: 'error',
-  analyst: 'warning',
-  viewer: 'info',
-};
-
 interface SidebarProps {
   open?: boolean;
   onClose?: () => void;
@@ -116,18 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </Toolbar>
       <Divider />
 
-      {user && (
-        <Box sx={{ px: 2, py: 1.5 }}>
-          <Chip
-            label={user.role.toUpperCase()}
-            color={ROLE_COLORS[user.role]}
-            size="small"
-            sx={{ fontWeight: 700, fontSize: '0.65rem' }}
-          />
-        </Box>
-      )}
-
-      <List sx={{ flex: 1, px: 1 }}>
+      <List sx={{ flex: 1, px: 1, pt: 1 }}>
         {visibleItems.map((item) => {
           const isActive =
             location.pathname === item.path ||

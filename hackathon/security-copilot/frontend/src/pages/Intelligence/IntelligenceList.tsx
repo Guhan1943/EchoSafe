@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
   TextField,
   Select,
@@ -10,7 +8,6 @@ import {
   FormControl,
   InputLabel,
   Button,
-  Chip,
   Table,
   TableHead,
   TableRow,
@@ -22,12 +19,21 @@ import {
   InputAdornment,
   IconButton,
   Tooltip,
+  Chip,
+  LinearProgress,
+  Collapse,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   OpenInNew as OpenIcon,
   Download as DownloadIcon,
   Refresh as RefreshIcon,
+  FilterList as FilterIcon,
+  ClearAll as ClearIcon,
+  ArrowForward as ArrowIcon,
+  Article as ArticleIcon,
+  Feed as FeedIcon,
+  ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -37,23 +43,54 @@ import { collectorApi } from '../../api/collectorApi';
 import { ArticleStatus, ArticleSeverity, ArticleListParams } from '../../types/article';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
+import SeverityChip from '../../components/Common/SeverityChip';
+import StatusChip from '../../components/Common/StatusChip';
+import { statusSoftColors } from '../../styles/badges';
 
-const severityColor: Record<string, string> = {
-  critical: '#d32f2f',
-  high: '#f57c00',
-  medium: '#f9a825',
-  low: '#388e3c',
-  info: '#1565c0',
+const STATUS_QUICK_FILTERS: { label: string; value: ArticleStatus | '' }[] = [
+  { label: 'All', value: '' },
+  { label: 'New', value: ArticleStatus.New },
+  { label: 'AI Verified', value: ArticleStatus.AiVerified },
+  { label: 'Pending Review', value: ArticleStatus.PendingManualReview },
+  { label: 'Approved', value: ArticleStatus.Approved },
+  { label: 'Published', value: ArticleStatus.Published },
+];
+
+const trustColor = (score: number) =>
+  score >= 70 ? '#2e7d32' : score >= 40 ? '#f9a825' : '#c62828';
+
+const TrustMeter: React.FC<{ score: number }> = ({ score }) => {
+  const color = trustColor(score);
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 96 }}>
+      <LinearProgress
+        variant="determinate"
+        value={score}
+        sx={{
+          flex: 1,
+          height: 6,
+          borderRadius: 3,
+          bgcolor: `${color}18`,
+          '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 3 },
+        }}
+      />
+      <Typography variant="caption" fontWeight={700} sx={{ color, minWidth: 26, textAlign: 'right' }}>
+        {score}
+      </Typography>
+    </Box>
+  );
 };
 
-const statusColor: Record<string, 'default' | 'warning' | 'success' | 'error' | 'info' | 'primary' | 'secondary'> = {
-  new: 'default',
-  ai_verified: 'info',
-  pending_manual_review: 'warning',
-  approved: 'success',
-  published: 'primary',
-  rejected: 'error',
-  under_review: 'warning',
+const formatDate = (published: string | null, collected: string) => {
+  const raw = published ?? collected;
+  const date = new Date(raw);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
 const IntelligenceList: React.FC = () => {
@@ -66,6 +103,7 @@ const IntelligenceList: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [filters, setFilters] = useState<ArticleListParams>({});
   const [searchText, setSearchText] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const queryParams: ArticleListParams = {
     ...filters,
@@ -74,7 +112,7 @@ const IntelligenceList: React.FC = () => {
     limit: rowsPerPage,
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['articles', queryParams],
     queryFn: () => articlesApi.getArticles(queryParams),
   });
@@ -93,6 +131,15 @@ const IntelligenceList: React.FC = () => {
     onError: () => showError('Failed to collect from all sources'),
   });
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.status) count += 1;
+    if (filters.severity) count += 1;
+    if (filters.source_id) count += 1;
+    if (searchText.trim()) count += 1;
+    return count;
+  }, [filters, searchText]);
+
   const handleFilterChange = (key: keyof ArticleListParams, value: string | number | undefined) => {
     setPage(0);
     setFilters((prev) => ({ ...prev, [key]: value || undefined }));
@@ -103,137 +150,284 @@ const IntelligenceList: React.FC = () => {
     setPage(0);
   };
 
+  const clearFilters = () => {
+    setFilters({});
+    setSearchText('');
+    setPage(0);
+  };
+
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
         <Alert severity="error">Failed to load articles. Please try again.</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700 }}>
-          Intelligence Feed
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Tooltip title="Refresh">
-            <IconButton onClick={() => refetch()} sx={{ color: 'var(--color-primary)' }}>
-              <RefreshIcon />
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      {/* Page header */}
+      <Box
+        sx={{
+          mb: 3,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                bgcolor: 'rgba(25, 118, 210, 0.1)',
+                color: 'var(--color-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FeedIcon />
+            </Box>
+            <Typography variant="h5" fontWeight={800} letterSpacing="-0.02em">
+              Intelligence Feed
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 520, lineHeight: 1.6 }}>
+            Browse collected security articles, filter by severity and status, and open any item for
+            verification details.
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
+          <Tooltip title="Refresh feed">
+            <IconButton
+              onClick={() => refetch()}
+              disabled={isFetching}
+              sx={{
+                border: '1px solid var(--color-border)',
+                borderRadius: 2,
+                color: 'var(--color-primary)',
+              }}
+            >
+              <RefreshIcon sx={{ animation: isFetching ? 'spin 1s linear infinite' : 'none', '@keyframes spin': { to: { transform: 'rotate(360deg)' } } }} />
             </IconButton>
           </Tooltip>
           {(user?.role === 'admin' || user?.role === 'analyst') && (
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<DownloadIcon />}
               onClick={() => collectAllMutation.mutate()}
               disabled={collectAllMutation.isPending}
-              sx={{ borderColor: 'var(--color-border-primary)', color: 'var(--color-primary)' }}
+              sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
             >
-              Collect All
+              {collectAllMutation.isPending ? 'Collecting…' : 'Collect All'}
             </Button>
           )}
         </Box>
       </Box>
 
-      {/* Filter Bar */}
-      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2, mb: 2 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-            <Box component="form" onSubmit={handleSearchSubmit} sx={{ flex: '1 1 200px' }}>
-              <TextField
-                placeholder="Search articles..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                size="small"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: 'var(--color-primary)', fontSize: 18 }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    color: 'var(--color-text-primary)',
-                    '& fieldset': { borderColor: 'rgba(0,120,215,0.3)' },
-                    '&:hover fieldset': { borderColor: 'rgba(0,120,215,0.6)' },
-                    '&.Mui-focused fieldset': { borderColor: 'var(--color-primary)' },
-                  },
-                }}
-              />
-            </Box>
+      {/* Filters — collapsed by default */}
+      <Box
+        sx={{
+          mb: 2,
+          borderRadius: 2,
+          bgcolor: 'var(--color-card-bg)',
+          border: '1px solid var(--color-border)',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          role="button"
+          tabIndex={0}
+          aria-expanded={filtersOpen}
+          aria-controls="intelligence-filters-panel"
+          onClick={() => setFiltersOpen((open) => !open)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setFiltersOpen((open) => !open);
+            }
+          }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1,
+            px: 2.5,
+            py: 1.75,
+            cursor: 'pointer',
+            userSelect: 'none',
+            transition: 'background-color 0.15s ease',
+            '&:hover': { bgcolor: 'var(--color-bg-subtle)' },
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FilterIcon sx={{ fontSize: 18, color: 'var(--color-primary)' }} />
+            <Typography variant="subtitle2" fontWeight={700}>
+              Search & filters
+            </Typography>
+            {activeFilterCount > 0 && (
+              <Chip label={`${activeFilterCount} active`} size="small" color="primary" variant="outlined" />
+            )}
+          </Box>
+          <ExpandMoreIcon
+            sx={{
+              color: 'var(--color-text-secondary)',
+              transition: 'transform 0.2s ease',
+              transform: filtersOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          />
+        </Box>
 
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel sx={{ color: 'var(--color-primary)' }}>Status</InputLabel>
-              <Select
-                value={filters.status ?? ''}
-                label="Status"
-                onChange={(e) => handleFilterChange('status', e.target.value as ArticleStatus)}
-                sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
-              >
-                <MenuItem value="">All Statuses</MenuItem>
-                {Object.values(ArticleStatus).map((s) => (
-                  <MenuItem key={s} value={s}>{s.replace(/_/g, ' ')}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+        <Collapse in={filtersOpen} id="intelligence-filters-panel">
+          <Box sx={{ px: 2.5, pb: 2.5, pt: 0, borderTop: '1px solid var(--color-border)' }}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 2, mt: 2 }}>
+          <Box component="form" onSubmit={handleSearchSubmit} sx={{ flex: '1 1 240px', minWidth: 200 }}>
+            <TextField
+              placeholder="Search by title, URL, or content…"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              size="small"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'var(--color-text-secondary)', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  bgcolor: 'var(--color-bg-subtle)',
+                },
+              }}
+            />
+          </Box>
 
-            <FormControl size="small" sx={{ minWidth: 130 }}>
-              <InputLabel sx={{ color: 'var(--color-primary)' }}>Severity</InputLabel>
-              <Select
-                value={filters.severity ?? ''}
-                label="Severity"
-                onChange={(e) => handleFilterChange('severity', e.target.value as ArticleSeverity)}
-                sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
-              >
-                <MenuItem value="">All Severities</MenuItem>
-                {Object.values(ArticleSeverity).map((s) => (
-                  <MenuItem key={s} value={s}>{s}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Severity</InputLabel>
+            <Select
+              value={filters.severity ?? ''}
+              label="Severity"
+              onChange={(e) => handleFilterChange('severity', e.target.value as ArticleSeverity)}
+              sx={{ borderRadius: 2, bgcolor: 'var(--color-bg-subtle)' }}
+            >
+              <MenuItem value="">All severities</MenuItem>
+              {Object.values(ArticleSeverity).map((s) => (
+                <MenuItem key={s} value={s}>
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel sx={{ color: 'var(--color-primary)' }}>Source</InputLabel>
-              <Select
-                value={filters.source_id ?? ''}
-                label="Source"
-                onChange={(e) => handleFilterChange('source_id', e.target.value as number)}
-                sx={{ color: 'var(--color-text-primary)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,120,215,0.3)' } }}
-              >
-                <MenuItem value="">All Sources</MenuItem>
-                {sources?.map((s) => (
-                  <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel>Source</InputLabel>
+            <Select
+              value={filters.source_id ?? ''}
+              label="Source"
+              onChange={(e) => handleFilterChange('source_id', e.target.value as number)}
+              sx={{ borderRadius: 2, bgcolor: 'var(--color-bg-subtle)' }}
+            >
+              <MenuItem value="">All sources</MenuItem>
+              {sources?.map((s) => (
+                <MenuItem key={s.id} value={s.id}>
+                  {s.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
+          {activeFilterCount > 0 && (
             <Button
               size="small"
-              onClick={() => { setFilters({}); setSearchText(''); setPage(0); }}
-              sx={{ color: 'var(--color-text-secondary)' }}
+              startIcon={<ClearIcon />}
+              onClick={clearFilters}
+              sx={{ textTransform: 'none', color: 'text.secondary' }}
             >
-              Clear
+              Clear all
             </Button>
+          )}
+        </Box>
+
+        {/* Status quick filters */}
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          {STATUS_QUICK_FILTERS.map(({ label, value }) => {
+            const isActive = (filters.status ?? '') === value;
+            const chipColor = value ? statusSoftColors[value]?.color : undefined;
+            return (
+              <Chip
+                key={label}
+                label={label}
+                size="small"
+                onClick={() => handleFilterChange('status', value || undefined)}
+                sx={{
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  ...(isActive
+                    ? {
+                        bgcolor: chipColor ? `${chipColor}20` : 'var(--color-primary)',
+                        color: chipColor ?? '#fff',
+                        border: chipColor ? `1px solid ${chipColor}40` : 'none',
+                        '&:hover': { bgcolor: chipColor ? `${chipColor}30` : 'var(--color-primary-dark)' },
+                      }
+                    : {
+                        bgcolor: 'var(--color-bg-subtle)',
+                        border: '1px solid var(--color-border)',
+                        '&:hover': { bgcolor: 'var(--color-border)' },
+                      }),
+                }}
+              />
+            );
+          })}
+        </Box>
           </Box>
-        </CardContent>
-      </Card>
+        </Collapse>
+      </Box>
 
       {/* Table */}
-      <Card sx={{ background: 'var(--color-card-bg)', border: '1px solid var(--color-border-primary)', borderRadius: 2 }}>
+      <Box
+        sx={{
+          borderRadius: 2,
+          bgcolor: 'var(--color-card-bg)',
+          border: '1px solid var(--color-border)',
+          overflow: 'hidden',
+        }}
+      >
         <Box sx={{ overflowX: 'auto' }}>
-          <Table size="small">
+          <Table size="medium" stickyHeader>
             <TableHead>
               <TableRow>
-                {['Title', 'Source', 'Severity', 'Status', 'Trust Score', 'Date', 'Actions'].map((h) => (
+                {[
+                  { label: 'Article', width: '36%' },
+                  { label: 'Source', width: '14%' },
+                  { label: 'Severity', width: '10%' },
+                  { label: 'Status', width: '12%' },
+                  { label: 'Trust', width: '12%' },
+                  { label: 'Date', width: '10%' },
+                  { label: '', width: '6%' },
+                ].map(({ label, width }) => (
                   <TableCell
-                    key={h}
-                    sx={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-border-primary)', fontSize: 12, fontWeight: 600 }}
+                    key={label || 'actions'}
+                    sx={{
+                      width,
+                      bgcolor: 'var(--color-bg-subtle)',
+                      color: 'var(--color-text-secondary)',
+                      borderBottom: '1px solid var(--color-border)',
+                      fontSize: '0.6875rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      py: 1.5,
+                    }}
                   >
-                    {h}
+                    {label}
                   </TableCell>
                 ))}
               </TableRow>
@@ -243,127 +437,165 @@ const IntelligenceList: React.FC = () => {
                 ? Array.from({ length: 8 }).map((_, i) => (
                     <TableRow key={i}>
                       {Array.from({ length: 7 }).map((_, j) => (
-                        <TableCell key={j} sx={{ borderBottom: '1px solid rgba(0,120,215,0.1)' }}>
-                          <Skeleton />
+                        <TableCell key={j} sx={{ borderBottom: '1px solid var(--color-border)' }}>
+                          <Skeleton variant={j === 0 ? 'text' : 'rounded'} height={j === 0 ? 28 : 24} />
                         </TableCell>
                       ))}
                     </TableRow>
                   ))
-                : data?.items.map((article) => (
+                : data?.items.length === 0
+                  ? (
+                    <TableRow>
+                      <TableCell colSpan={7} sx={{ py: 8, border: 'none' }}>
+                        <Box sx={{ textAlign: 'center', maxWidth: 360, mx: 'auto' }}>
+                          <ArticleIcon sx={{ fontSize: 48, color: 'var(--color-text-muted)', mb: 2, opacity: 0.5 }} />
+                          <Typography variant="h6" fontWeight={700} gutterBottom>
+                            No articles found
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            {activeFilterCount > 0
+                              ? 'Try adjusting your filters or search terms.'
+                              : 'Run Collect All to pull the latest intelligence from your sources.'}
+                          </Typography>
+                          {activeFilterCount > 0 && (
+                            <Button variant="outlined" startIcon={<ClearIcon />} onClick={clearFilters} sx={{ textTransform: 'none' }}>
+                              Clear filters
+                            </Button>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )
+                  : data?.items.map((article) => (
                     <TableRow
                       key={article.id}
                       hover
                       sx={{
                         cursor: 'pointer',
-                        '&:hover': { bgcolor: 'rgba(0,120,215,0.05)' },
-                        '& td': { borderBottom: '1px solid rgba(0,120,215,0.08)' },
+                        transition: 'background-color 0.15s ease',
+                        '&:hover': {
+                          bgcolor: 'rgba(25, 118, 210, 0.04)',
+                          '& .row-arrow': { opacity: 1, transform: 'translateX(0)' },
+                        },
+                        '& td': { borderBottom: '1px solid var(--color-border)' },
                       }}
                       onClick={() => navigate(`/intelligence/${article.id}`)}
                     >
-                      <TableCell
-                        sx={{
-                          color: 'var(--color-text-primary)',
-                          maxWidth: 280,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {article.title}
-                      </TableCell>
-                      <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
-                        {sources?.find((s) => s.id === article.source_id)?.name ?? `#${article.source_id}`}
-                      </TableCell>
-                      <TableCell>
-                        {article.severity ? (
-                          <Chip
-                            label={article.severity}
-                            size="small"
+                      <TableCell sx={{ py: 2 }}>
+                        <Tooltip title={article.title} placement="top-start">
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
                             sx={{
-                              bgcolor: `${severityColor[article.severity]}20`,
-                              color: severityColor[article.severity],
-                              fontSize: 11,
-                              height: 20,
-                              textTransform: 'capitalize',
+                              color: 'var(--color-text-primary)',
+                              maxWidth: 420,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              lineHeight: 1.4,
                             }}
-                          />
-                        ) : (
-                          <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>—</Typography>
+                          >
+                            {article.title}
+                          </Typography>
+                        </Tooltip>
+                        {article.summary && (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{
+                              display: 'block',
+                              mt: 0.25,
+                              maxWidth: 420,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {article.summary}
+                          </Typography>
                         )}
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          label={article.status.replace(/_/g, ' ')}
-                          size="small"
-                          color={statusColor[article.status] ?? 'default'}
-                          sx={{ fontSize: 11, height: 20 }}
-                        />
+                        <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                          {sources?.find((s) => s.id === article.source_id)?.name ?? `#${article.source_id}`}
+                        </Typography>
                       </TableCell>
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box
-                            sx={{
-                              width: 40,
-                              height: 4,
-                              borderRadius: 2,
-                              bgcolor: 'var(--color-bg-subtle)',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                height: '100%',
-                                width: `${article.trust_score}%`,
-                                bgcolor:
-                                  article.trust_score >= 70
-                                    ? '#388e3c'
-                                    : article.trust_score >= 40
-                                    ? '#f9a825'
-                                    : '#d32f2f',
-                                borderRadius: 2,
-                              }}
-                            />
-                          </Box>
-                          <Typography variant="caption" sx={{ color: 'var(--color-text-secondary)' }}>
-                            {article.trust_score}
+                        {article.severity ? (
+                          <SeverityChip severity={article.severity} />
+                        ) : (
+                          <Typography variant="caption" color="text.secondary">
+                            —
                           </Typography>
-                        </Box>
+                        )}
                       </TableCell>
-                      <TableCell sx={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>
-                        {article.published_at
-                          ? new Date(article.published_at).toLocaleDateString()
-                          : new Date(article.collected_at).toLocaleDateString()}
+                      <TableCell>
+                        <StatusChip status={article.status} />
+                      </TableCell>
+                      <TableCell>
+                        <TrustMeter score={article.trust_score} />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {formatDate(article.published_at, article.collected_at)}
+                        </Typography>
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Tooltip title="Open in new tab">
-                          <IconButton
-                            size="small"
-                            href={article.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            component="a"
-                            sx={{ color: 'var(--color-primary)' }}
-                          >
-                            <OpenIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Tooltip title="Open source URL">
+                            <IconButton
+                              size="small"
+                              href={article.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              component="a"
+                              sx={{
+                                color: 'var(--color-text-secondary)',
+                                '&:hover': { color: 'var(--color-primary)' },
+                              }}
+                            >
+                              <OpenIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <ArrowIcon
+                            className="row-arrow"
+                            sx={{
+                              fontSize: 16,
+                              color: 'var(--color-primary)',
+                              opacity: 0,
+                              transform: 'translateX(-4px)',
+                              transition: 'opacity 0.15s ease, transform 0.15s ease',
+                            }}
+                          />
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
             </TableBody>
           </Table>
         </Box>
-        <TablePagination
-          component="div"
-          count={data?.total ?? 0}
-          page={page}
-          onPageChange={(_, p) => setPage(p)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-          rowsPerPageOptions={[10, 20, 50]}
-          sx={{ color: 'var(--color-text-secondary)', borderTop: '1px solid var(--color-border-primary)' }}
-        />
-      </Card>
+
+        {(data?.total ?? 0) > 0 && (
+          <TablePagination
+            component="div"
+            count={data?.total ?? 0}
+            page={page}
+            onPageChange={(_, p) => setPage(p)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+            sx={{
+              borderTop: '1px solid var(--color-border)',
+              '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                fontSize: '0.8125rem',
+              },
+            }}
+          />
+        )}
+      </Box>
     </Box>
   );
 };

@@ -10,6 +10,7 @@ from app.database import get_db
 from app.models.user import User
 from app.repositories.content import ContentRepository
 from app.schemas.content import PublishedContentListResponse, PublishedContentResponse
+from app.schemas.blog import BlogPostDetailResponse, BlogPostListResponse, BlogPostSummaryResponse
 from app.schemas.publish import PublishRequest
 from app.services.publishing import PublishingService
 
@@ -68,3 +69,33 @@ def get_publishing_history(
         items=[PublishedContentResponse.model_validate(item) for item in items],
         total=total,
     )
+
+
+@router.get("/blog", response_model=BlogPostListResponse)
+def list_blog_posts(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> BlogPostListResponse:
+    """List published internal blog posts."""
+    service = PublishingService(db)
+    items, total = service.get_blog_posts(skip=skip, limit=limit)
+    return BlogPostListResponse(
+        items=[BlogPostSummaryResponse.model_validate(item) for item in items],
+        total=total,
+    )
+
+
+@router.get("/blog/{published_id}", response_model=BlogPostDetailResponse)
+def get_blog_post(
+    published_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> BlogPostDetailResponse:
+    """Get a single published internal blog post."""
+    service = PublishingService(db)
+    post = service.get_blog_post(published_id)
+    if post is None:
+        raise NotFoundException(detail=f"Blog post {published_id} not found")
+    return BlogPostDetailResponse.model_validate(post)

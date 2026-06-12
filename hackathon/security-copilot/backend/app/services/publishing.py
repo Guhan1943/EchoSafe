@@ -1,8 +1,9 @@
 import logging
+import re
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.audit import AuditLog
 from app.models.article import Article
@@ -15,6 +16,47 @@ from app.services.email_publisher import EmailPublisherService
 from app.services.linkedin_publisher import LinkedInPublisherService
 
 logger = logging.getLogger(__name__)
+
+CONTENT_TYPE_LABELS = {
+    "blog": "Blog Article",
+    "executive_brief": "Executive Brief",
+    "technical_analysis": "Technical Analysis",
+}
+
+
+def _blog_excerpt(text: str, limit: int = 200) -> str:
+    plain = re.sub(r"<[^>]+>", " ", text)
+    plain = re.sub(r"[#*_>`\[\]()]", " ", plain)
+    plain = re.sub(r"\s+", " ", plain).strip()
+    if len(plain) <= limit:
+        return plain
+    return plain[: limit - 1].rstrip() + "…"
+
+
+def _blog_summary_from_published(published: PublishedContent) -> dict:
+    generated = published.generated_content
+    article = published.article
+    title = (generated.title if generated else None) or (article.title if article else "Untitled")
+    content = generated.content if generated else ""
+    content_type = generated.content_type if generated else "blog"
+    image_url = None
+    if generated and generated.image_url:
+        image_url = generated.image_url
+    elif article and article.image_url:
+        image_url = article.image_url
+
+    return {
+        "id": published.id,
+        "generated_content_id": published.generated_content_id,
+        "article_id": published.article_id,
+        "title": title,
+        "excerpt": _blog_excerpt(content),
+        "content_type": content_type,
+        "content_type_label": CONTENT_TYPE_LABELS.get(content_type, content_type.replace("_", " ").title()),
+        "severity": article.severity if article else None,
+        "image_url": image_url,
+        "published_at": published.published_at,
+    }
 
 
 class PublishingService:
@@ -212,6 +254,53 @@ class PublishingService:
         total = query.count()
         items = query.offset(skip).limit(limit).all()
         return items, total
+
+    def get_blog_posts(
+        self, skip: int = 0, limit: int = 20
+    ) -> tuple[list[dict], int]:
+        query = (
+            self.db.query(PublishedContent)
+            .options(
+                joinedload(PublishedContent.generated_content),
+                joinedload(PublishedContent.article),
+            )
+            .filter(
+                PublishedContent.platform == "blog",
+                PublishedContent.status == "published",
+            )
+            .order_by(PublishedContent.published_at.desc())
+        )
+        total = query.count()
+        items = query.offset(skip).limit(limit).all()
+        return [_blog_summary_from_published(item) for item in items], total
+
+    def get_blog_post(self, published_id: int) -> Optional[dict]:
+        published = (
+            self.db.query(PublishedContent)
+            .options(
+                joinedload(PublishedContent.generated_content),
+                joinedload(PublishedContent.article),
+            )
+            .filter(
+                PublishedContent.id == published_id,
+                PublishedContent.platform == "blog",
+                PublishedContent.status == "published",
+            )
+            .first()
+        )
+        if published is None:
+            return None
+
+        summary = _blog_summary_from_published(published)
+        generated = published.generated_content
+        article = published.article
+        return {
+            **summary,
+            "content": generated.content if generated else "",
+            "article_title": article.title if article else None,
+            "article_summary": article.summary if article else None,
+            "trust_score": article.trust_score if article else None,
+        }
 
     def export_content(self, content_id: int) -> str:
         generated = (

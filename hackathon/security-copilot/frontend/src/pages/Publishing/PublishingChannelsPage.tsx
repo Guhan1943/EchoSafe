@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import PublishingChannelsPanel from '../Admin/PublishingChannelsPanel';
 import { useNotification } from '../../hooks/useNotification';
@@ -25,13 +25,7 @@ const PublishingChannelsPage: React.FC = () => {
   }, [searchParams, setSearchParams, showSuccess, showError]);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ color: 'var(--color-text-primary)', fontWeight: 700, mb: 1 }}>
-        Publishing Channels
-      </Typography>
-      <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 3 }}>
-        Connect LinkedIn and SMTP email to publish approved content from Content Management.
-      </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <PublishingChannelsPanel />
     </Box>
   );

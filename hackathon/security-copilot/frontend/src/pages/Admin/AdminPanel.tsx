@@ -43,6 +43,8 @@ import type { Setting } from '../../types/settings';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../hooks/useNotification';
 import PublishingChannelsPanel from './PublishingChannelsPanel';
+import RoleChip from '../../components/Common/RoleChip';
+import { softBadgeSx } from '../../styles/badges';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -55,12 +57,6 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => (
     {value === index && children}
   </Box>
 );
-
-const roleColor: Record<User['role'], 'error' | 'warning' | 'info'> = {
-  admin: 'error',
-  analyst: 'warning',
-  viewer: 'info',
-};
 
 const defaultUserForm: UserCreate = {
   email: '',
@@ -233,14 +229,13 @@ const AdminPanel: React.FC = () => {
                           <TableCell sx={{ color: 'var(--color-text-primary)' }}>{user.full_name || '—'}</TableCell>
                           <TableCell sx={{ color: 'var(--color-primary)' }}>{user.email}</TableCell>
                           <TableCell>
-                            <Chip label={user.role} size="small" color={roleColor[user.role]} sx={{ fontSize: 11, height: 20 }} />
+                            <RoleChip role={user.role} showIcon={false} />
                           </TableCell>
                           <TableCell>
                             <Chip
                               label={user.is_active ? 'Active' : 'Inactive'}
                               size="small"
-                              color={user.is_active ? 'success' : 'default'}
-                              sx={{ fontSize: 11, height: 20 }}
+                              sx={softBadgeSx(user.is_active ? '#2e7d32' : '#546e7a')}
                             />
                           </TableCell>
                           <TableCell>
@@ -313,7 +308,7 @@ const AdminPanel: React.FC = () => {
           </TabPanel>
 
           <TabPanel value={tab} index={2}>
-            <PublishingChannelsPanel />
+            <PublishingChannelsPanel embedded />
           </TabPanel>
         </CardContent>
       </Card>

@@ -2,50 +2,39 @@ import React from 'react';
 import { Chip } from '@mui/material';
 import type { ChipProps } from '@mui/material';
 import { ArticleSeverity } from '../../types/article';
+import { SEVERITY_COLORS, softBadgeSx } from '../../styles/badges';
 
 interface SeverityChipProps {
   severity: ArticleSeverity | string | null | undefined;
   size?: ChipProps['size'];
 }
 
-const SEVERITY_CONFIG: Record<
-  ArticleSeverity,
-  { label: string; sx: object }
-> = {
-  [ArticleSeverity.Critical]: {
-    label: 'Critical',
-    sx: { bgcolor: '#B71C1C', color: 'white', fontWeight: 700 },
-  },
-  [ArticleSeverity.High]: {
-    label: 'High',
-    sx: { bgcolor: '#E65100', color: 'white', fontWeight: 700 },
-  },
-  [ArticleSeverity.Medium]: {
-    label: 'Medium',
-    sx: { bgcolor: '#F57F17', color: 'white', fontWeight: 700 },
-  },
-  [ArticleSeverity.Low]: {
-    label: 'Low',
-    sx: { bgcolor: '#1B5E20', color: 'white', fontWeight: 700 },
-  },
-  [ArticleSeverity.Info]: {
-    label: 'Info',
-    sx: { bgcolor: '#0D47A1', color: 'white', fontWeight: 700 },
-  },
+const SEVERITY_LABELS: Record<ArticleSeverity, string> = {
+  [ArticleSeverity.Critical]: 'Critical',
+  [ArticleSeverity.High]: 'High',
+  [ArticleSeverity.Medium]: 'Medium',
+  [ArticleSeverity.Low]: 'Low',
+  [ArticleSeverity.Info]: 'Info',
 };
 
 const SeverityChip: React.FC<SeverityChipProps> = ({ severity, size = 'small' }) => {
   if (!severity) {
-    return <Chip label="Unknown" size={size} variant="outlined" />;
+    return (
+      <Chip
+        label="Unknown"
+        size={size}
+        sx={softBadgeSx('#90a4ae')}
+      />
+    );
   }
 
-  const config = SEVERITY_CONFIG[severity as ArticleSeverity];
+  const key = severity.toLowerCase();
+  const color = SEVERITY_COLORS[key] ?? '#546e7a';
+  const label =
+    SEVERITY_LABELS[severity as ArticleSeverity] ??
+    severity.charAt(0).toUpperCase() + severity.slice(1);
 
-  if (!config) {
-    return <Chip label={severity} size={size} variant="outlined" />;
-  }
-
-  return <Chip label={config.label} size={size} sx={config.sx} />;
+  return <Chip label={label} size={size} sx={softBadgeSx(color)} />;
 };
 
 export default SeverityChip;

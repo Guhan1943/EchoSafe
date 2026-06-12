@@ -20,6 +20,9 @@ import SourceManagement from './pages/Sources/SourceManagement';
 import AnalyticsDashboard from './pages/Analytics/AnalyticsDashboard';
 import AdminPanel from './pages/Admin/AdminPanel';
 import AuditLogs from './pages/Admin/AuditLogs';
+import ThreatFeed from './pages/Threats/ThreatFeed';
+import ThreatDetail from './pages/Threats/ThreatDetail';
+import ThreatDashboard from './pages/Threats/ThreatDashboard';
 
 // Layout wrapper that enforces auth then renders AppLayout with nested routes
 const ProtectedLayout: React.FC = () => (
@@ -86,6 +89,10 @@ const App: React.FC = () => {
           />
 
           <Route path="/analytics" element={<AnalyticsDashboard />} />
+
+          <Route path="/threats" element={<ThreatFeed />} />
+          <Route path="/threats/:id" element={<ThreatDetail />} />
+          <Route path="/threat-dashboard" element={<ThreatDashboard />} />
 
           <Route
             path="/admin"

@@ -21,6 +21,8 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import HistoryIcon from '@mui/icons-material/History';
 import SecurityIcon from '@mui/icons-material/Security';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import RadarIcon from '@mui/icons-material/Radar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
@@ -52,6 +54,8 @@ const NAV_ITEMS: NavItem[] = [
   },
   { label: 'Sources', path: '/sources', icon: <SourceIcon />, roles: ['admin'] },
   { label: 'Analytics', path: '/analytics', icon: <BarChartIcon /> },
+  { label: 'Threat Feed', path: '/threats', icon: <BugReportIcon /> },
+  { label: 'CTI Dashboard', path: '/threat-dashboard', icon: <RadarIcon /> },
   {
     label: 'Admin Panel',
     path: '/admin',
